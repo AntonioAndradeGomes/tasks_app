@@ -48,6 +48,13 @@ class AppRoutes {
         builder: (BuildContext context, GoRouterState state) {
           return const HomePage();
         },
+        redirect: (context, state) {
+          if (repository.isAuthenticated == null ||
+              repository.isAuthenticated == false) {
+            return Routes.login;
+          }
+          return null;
+        },
       ),
     ],
   );
