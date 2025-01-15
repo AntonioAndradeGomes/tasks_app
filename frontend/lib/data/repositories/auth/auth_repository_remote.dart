@@ -2,6 +2,7 @@ import 'package:frontend/data/repositories/auth/auth_repository.dart';
 import 'package:frontend/data/services/api/auth_api_client.dart';
 import 'package:frontend/data/services/api/model/login_response.dart';
 import 'package:frontend/data/services/shared_preferences_service.dart';
+import 'package:frontend/domain/models/user_model.dart';
 import 'package:frontend/utils/result.dart';
 import 'package:logging/logging.dart';
 
@@ -70,12 +71,29 @@ class AuthRepositoryRemote extends AuthRepository {
       if (result is Error<void>) {
         _log.severe('Error logging out: ${result.error}');
       }
-
       _authToken = null;
       _isAuthenticated = false;
       return result;
     } finally {
       notifyListeners();
+    }
+  }
+
+  @override
+  Future<Result<void>> signup({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    _log.info('User singup');
+    final result = await _apiClient.signup(name, email, password);
+    switch (result) {
+      case Ok<UserModel>():
+        _log.finer('Signup successful');
+        return const Result.ok(null);
+      case Error<UserModel>():
+        _log.warning('Error signing up: ${result.error}');
+        return Result.error(result.error);
     }
   }
 }

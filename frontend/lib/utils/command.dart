@@ -40,21 +40,16 @@ abstract class Command<T> extends ChangeNotifier {
   }
 }
 
-/// [Command] without arguments.
-/// Takes a [CommandAction0] as action.
 class Command0<T> extends Command<T> {
   Command0(this._action);
 
   final CommandAction0<T> _action;
 
-  /// Executes the action.
   Future<void> execute() async {
     await _execute(_action);
   }
 }
 
-/// [Command] with one argument.
-/// Takes a [CommandAction1] as action.
 class Command1<T, A> extends Command<T> {
   Command1(this._action);
 

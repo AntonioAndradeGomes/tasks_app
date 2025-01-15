@@ -37,6 +37,12 @@ class AppRoutes {
         path: Routes.login,
         builder: (BuildContext context, GoRouterState state) =>
             const LoginPage(),
+        redirect: (context, state) {
+          if (repository.isAuthenticated == true) {
+            return Routes.home;
+          }
+          return null;
+        },
       ),
       GoRoute(
         path: Routes.signup,

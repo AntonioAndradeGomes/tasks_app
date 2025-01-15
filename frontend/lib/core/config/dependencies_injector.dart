@@ -4,6 +4,7 @@ import 'package:frontend/data/services/api/auth_api_client.dart';
 import 'package:frontend/data/services/shared_preferences_service.dart';
 import 'package:frontend/ui/auth/login/view_models/login_view_model.dart';
 import 'package:frontend/ui/auth/logout/logout_viewmodel.dart';
+import 'package:frontend/ui/auth/signup/view_model/signup_viewmodel.dart';
 import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;
@@ -24,9 +25,15 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  getIt.registerCachedFactory(
+  getIt.registerFactory(
     () => LogoutViewmodel(
       authRepository: getIt(),
+    ),
+  );
+
+  getIt.registerFactory(
+    () => SignupViewmodel(
+      repository: getIt(),
     ),
   );
 }

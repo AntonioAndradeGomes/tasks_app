@@ -8,11 +8,11 @@ abstract class AuthRepository extends ChangeNotifier {
     required String password,
   });
   Future<Result<void>> logout();
-  /*Future<Result<void>> signup({
+  Future<Result<void>> signup({
     required String name,
     required String email,
     required String password,
   });
-  
-  Future<Result<UserModel>> getCurrentUser();*/
+
+  /* Future<Result<UserModel>> getCurrentUser();*/
 }
