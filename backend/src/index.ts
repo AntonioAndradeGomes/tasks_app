@@ -5,7 +5,8 @@ import "express-async-errors"
 import "dotenv/config";
 import {authRouter} from "./features/user/interface/routes/auth.routes";
 import { errorHandler } from "./shared/middlewares/error.middleware";
-import {taskRoutes} from "./features/tasks/intreface/routes/tasks.routes";
+import {taskRoutes} from "./features/tasks/interface/routes/tasks.routes";
+import { setupSwagger } from "./shared/swagger/swagger";
 
 const app = express();
 
@@ -14,6 +15,10 @@ app.use("/auth", authRouter);
 app.use("/tasks", taskRoutes);
 app.use(errorHandler);
 
-app.listen(8000, () => {
-    console.log('Server is running on port 8000!!!!!!');
+
+
+const PORT = process.env.PORT || 8000;
+setupSwagger(app, PORT.toString());
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}!`);
 });

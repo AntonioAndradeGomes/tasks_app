@@ -6,8 +6,8 @@ interface TaskRequest{
     description: string;
     hexColor: string;
     user_id: string;
-    due_at: Date | null;
-    completed_at: Date | null;
+    due_at?: Date | null;
+    completed_at?: Date | null;
 }
 
 @injectable()

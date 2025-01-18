@@ -29,6 +29,26 @@ describe('TaskRepositoryPrisma', () => {
         jest.clearAllMocks();
     });
 
+    it('deve retornar uma tarefa por ID', async () => {
+        const taskId = "task123";
+        const task = {
+            id: taskId,
+            title: "Test Task",
+            description: "Test Description",
+            hexColor: "#FF0000",
+            user_id: "user123",
+            due_at: new Date(),
+            completed_at: null,
+        };
+
+        (prisma.task.findUnique as jest.Mock).mockResolvedValue(task);    
+
+        const result = await repository.getTaskById(taskId);
+
+        expect(result).toEqual(task);
+        expect(prisma.task.findUnique).toHaveBeenCalledWith({ where: { id: taskId } });    
+    });
+
     it('deve criar uma nova tarefa', async () => {
         const task = {
             title: "Test Task",
@@ -120,4 +140,6 @@ describe('TaskRepositoryPrisma', () => {
 
         expect(prisma.task.delete).toHaveBeenCalledWith({ where: { id: taskId } });
     });
+
+
 });

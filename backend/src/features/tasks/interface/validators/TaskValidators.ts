@@ -12,8 +12,8 @@ const createTaskValidator = celebrate({
             "string.empty": "hexColor is required.",
             "any.required": "hexColor is required."
         }),
-        due_at: Joi.date(),
-        completed_at: Joi.date(),
+        due_at: Joi.date().optional(),
+        completed_at: Joi.date().optional(),
     }),
 });
 

@@ -6,7 +6,6 @@ export class GetMyTasks {
     constructor(
         @inject("TaskRepository")   private taskRepository: TaskRepository,
     ){}
-  
     async execute(userId: string) {
         return this.taskRepository.getTasksByUserId(userId);
     }

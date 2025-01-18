@@ -12,7 +12,7 @@ import { VerifyToken } from "../features/user/use-cases/VerifyToken";
 import { TaskRepository } from "../features/tasks/domain/interface/TaskRepository";
 import { TaskRepositoryPrisma } from "../features/tasks/infrastructure/repositories/TaskRepositoryPrisma";
 import { CreateTask } from "../features/tasks/usecase/CreateTask";
-import { TasksController } from "../features/tasks/intreface/controllers/TasksController";
+import { TasksController } from "../features/tasks/interface/controllers/TasksController";
 import { GetMyTasks } from "../features/tasks/usecase/GetMyTasks";
 import { DeleteTask } from "../features/tasks/usecase/DeleteTask";
 import { UpdateTask } from "../features/tasks/usecase/UpdateTask";
