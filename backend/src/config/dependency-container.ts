@@ -15,6 +15,7 @@ import { CreateTask } from "../features/tasks/usecase/CreateTask";
 import { TasksController } from "../features/tasks/intreface/controllers/TasksController";
 import { GetMyTasks } from "../features/tasks/usecase/GetMyTasks";
 import { DeleteTask } from "../features/tasks/usecase/DeleteTask";
+import { UpdateTask } from "../features/tasks/usecase/UpdateTask";
 
 
 // Registra PrismaClient
@@ -36,4 +37,5 @@ container.registerSingleton<TaskRepository>('TaskRepository', TaskRepositoryPris
 container.registerSingleton<CreateTask>('CreateTask', CreateTask);
 container.registerSingleton<GetMyTasks>('GetMyTasks', GetMyTasks);
 container.registerSingleton<DeleteTask>('DeleteTask', DeleteTask);
+container.registerSingleton<UpdateTask>('UpdateTask', UpdateTask);
 container.registerSingleton<TasksController>('TasksController', TasksController);

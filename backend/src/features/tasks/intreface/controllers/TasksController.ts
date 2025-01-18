@@ -4,6 +4,7 @@ import { AuthRequest } from "../../../../shared/middlewares/auth.middleware";
 import { Response } from "express";
 import { GetMyTasks } from "../../usecase/GetMyTasks";
 import { DeleteTask } from "../../usecase/DeleteTask";
+import { UpdateTask } from "../../usecase/UpdateTask";
 
 @injectable()
 export class TasksController {
@@ -11,6 +12,7 @@ export class TasksController {
         @inject("CreateTask") private createTaskUseCase: CreateTask,
         @inject("GetMyTasks") private getMyTasksUseCase: GetMyTasks,
         @inject("DeleteTask") private deleteTaskUseCase: DeleteTask,
+        @inject("UpdateTask") private updateTaskUseCase: UpdateTask,
     ){};
 
     async createTask(request: AuthRequest, response: Response) {
@@ -31,5 +33,13 @@ export class TasksController {
         const userId = request.user as string;
         await this.deleteTaskUseCase.execute(taskId, userId);
         response.status(204).send();
+    }
+
+    async updateTask(request: AuthRequest, response: Response) {
+        const userId = request.user as string;
+        const taskId = request.params.id;
+        const data = request.body;
+        const updatedTask = await this.updateTaskUseCase.execute(userId, taskId, data);
+        response.status(200).send(updatedTask);
     }
 }
