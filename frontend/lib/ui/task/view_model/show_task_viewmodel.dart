@@ -45,6 +45,11 @@ class ShowTaskViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateDueDate(DateTime? dueDate) {
+    _editableTask = _editableTask!.taskWithDueAt(dueDate);
+    notifyListeners();
+  }
+
   void completeTask() {
     if (_editableTask!.completedAt == null) {
       _editableTask = _editableTask!.copyWith(completedAt: DateTime.now());
