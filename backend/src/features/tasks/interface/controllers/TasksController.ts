@@ -24,7 +24,8 @@ export class TasksController {
 
     async getMyTasks(request: AuthRequest, response: Response) {
         const userId = request.user as string;
-        const tasks = await this.getMyTasksUseCase.execute(userId);
+        const {taskId} = request.query;
+        const tasks = await this.getMyTasksUseCase.execute(userId,  typeof taskId == "string" ? taskId : undefined);
         response.status(200).send(tasks);
     }
 

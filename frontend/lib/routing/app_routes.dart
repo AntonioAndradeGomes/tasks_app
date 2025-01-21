@@ -5,6 +5,7 @@ import 'package:frontend/ui/auth/login/pages/login_page.dart';
 import 'package:frontend/routing/routes.dart';
 import 'package:frontend/ui/auth/signup/pages/signup_page.dart';
 import 'package:frontend/ui/splash/pages/splash_page.dart';
+import 'package:frontend/ui/task/pages/show_task_page.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRoutes {
@@ -61,6 +62,21 @@ class AppRoutes {
           }
           return null;
         },
+      ),
+      GoRoute(
+        path: Routes.task,
+        builder: (context, state) => const ShowTaskPage(),
+        routes: [
+          GoRoute(
+            path: ':taskId',
+            builder: (context, state) {
+              final taskId = state.pathParameters['taskId'];
+              return ShowTaskPage(
+                taskId: taskId,
+              );
+            },
+          ),
+        ],
       ),
     ],
   );

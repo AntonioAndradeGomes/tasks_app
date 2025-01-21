@@ -3,7 +3,7 @@ import { celebrate, Joi, Segments } from "celebrate";
 const createTaskValidator = celebrate({
     [Segments.BODY]: Joi.object({
         title: Joi.string().required(),
-        description: Joi.string().required(),
+        description: Joi.string().optional().allow(null),
         hexColor: Joi.string()
         .required()
         .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
@@ -12,8 +12,8 @@ const createTaskValidator = celebrate({
             "string.empty": "hexColor is required.",
             "any.required": "hexColor is required."
         }),
-        due_at: Joi.date().optional(),
-        completed_at: Joi.date().optional(),
+        due_at: Joi.date().optional().allow(null),
+        completed_at: Joi.date().optional().allow(null),
     }),
 });
 
@@ -29,7 +29,7 @@ const updateTaskValidator = celebrate({
     }),
     [Segments.BODY]: Joi.object({
         title: Joi.string().optional(),
-        description: Joi.string().optional(),
+        description: Joi.string().optional().allow(null),
         hexColor: Joi.string()
         .optional()
         .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
@@ -38,8 +38,8 @@ const updateTaskValidator = celebrate({
             "string.empty": "hexColor is required.",
             "any.required": "hexColor is required."
         }),
-        due_at: Joi.date().optional(),
-        completed_at: Joi.date().optional(),
+        due_at: Joi.date().optional().allow(null),
+        completed_at: Joi.date().optional().allow(null),
     }).min(1),
 });
 

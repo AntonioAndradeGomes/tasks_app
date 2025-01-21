@@ -9,6 +9,14 @@ export class TaskRepositoryPrisma implements TaskRepository{
     constructor(
         @inject("PrismaClient") private prisma: PrismaClient
     ){}
+    getTaskByUserIdAndTaskId(userId: string, taskId: string): Promise<TaskEntity | null> {
+        return this.prisma.task.findUnique({
+            where: {
+                id: taskId,
+                user_id: userId
+            }
+        })
+    }
     
     getTaskById(taskId: string): Promise<TaskEntity | null> {
         return this.prisma.task.findUnique({

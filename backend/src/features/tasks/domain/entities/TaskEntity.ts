@@ -1,7 +1,7 @@
 export interface TaskEntity {
     id?: string
     title: string
-    description: string
+    description?: string | null
     hexColor: string
     user_id: string
     due_at?: Date | null

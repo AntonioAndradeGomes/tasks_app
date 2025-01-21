@@ -1,15 +1,17 @@
-class TaskModel {
-  final String id;
+import 'package:equatable/equatable.dart';
+
+class TaskModel extends Equatable {
+  final String? id;
   final String title;
-  final String description;
+  final String? description;
   final String hexColor;
-  final String userId;
+  final String? userId;
   final DateTime? dueAt;
   final DateTime? completedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  TaskModel({
+  const TaskModel({
     required this.id,
     required this.title,
     required this.description,
@@ -45,6 +47,34 @@ class TaskModel {
     );
   }
 
+  TaskModel taskWithDueAt(DateTime? dueAt) {
+    return TaskModel(
+      id: id,
+      title: title,
+      description: description,
+      hexColor: hexColor,
+      userId: userId,
+      dueAt: dueAt,
+      completedAt: completedAt,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
+  TaskModel taskWithChecked(DateTime? completedAt) {
+    return TaskModel(
+      id: id,
+      title: title,
+      description: description,
+      hexColor: hexColor,
+      userId: userId,
+      dueAt: dueAt,
+      completedAt: completedAt,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
@@ -63,7 +93,8 @@ class TaskModel {
     return TaskModel(
       id: map['id'] as String,
       title: map['title'] as String,
-      description: map['description'] as String,
+      description:
+          map['description'] != null ? map['description'] as String : null,
       hexColor: map['hexColor'] as String,
       userId: map['user_id'] as String,
       dueAt: map['due_at'] != null
@@ -80,4 +111,17 @@ class TaskModel {
           : null,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        description,
+        hexColor,
+        userId,
+        dueAt,
+        completedAt,
+        createdAt,
+        updatedAt
+      ];
 }

@@ -35,6 +35,16 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
         ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.blue,
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          disabledElevation: 0,
+          highlightElevation: 0,
+          shape: StadiumBorder(),
+          foregroundColor: Colors.white,
+        ),
         inputDecorationTheme: InputDecorationTheme(
           contentPadding: const EdgeInsets.all(15),
           border: OutlineInputBorder(
