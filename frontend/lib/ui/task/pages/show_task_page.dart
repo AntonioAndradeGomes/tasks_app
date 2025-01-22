@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/config/dependencies_injector.dart';
-import 'package:frontend/domain/models/task_model.dart';
-import 'package:frontend/ui/home/view_model/home_view_model.dart';
 import 'package:frontend/ui/task/view_model/show_task_viewmodel.dart';
 import 'package:frontend/ui/task/widgets/task_editable_body_widget.dart';
-import 'package:frontend/utils/result.dart';
 
 class ShowTaskPage extends StatefulWidget {
   final String? taskId;
@@ -75,10 +72,7 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
 
   Future<void> _resultSave() async {
     if (_showTaskViewmodel.saveTask.completed) {
-      getIt<HomeViewModel>()
-          .addTask((_showTaskViewmodel.saveTask.result as Ok<TaskModel>).value);
       _showTaskViewmodel.saveTask.clearResult();
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Task saved'),

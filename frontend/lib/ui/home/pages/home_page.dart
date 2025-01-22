@@ -36,7 +36,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Tasks'),
-        //forceMaterialTransparency: true,
         actions: [
           ListenableBuilder(
             listenable: _logoutViewModel.logout,
@@ -73,21 +72,26 @@ class _HomePageState extends State<HomePage> {
           listenable: _homeViewModel,
           builder: (_, __) {
             final items = _homeViewModel.tasks;
-            return ListView.separated(
-              padding: const EdgeInsets.only(
-                bottom: 150,
-                top: 10,
-                left: 10,
-                right: 10,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return TaskCard(
-                  task: items[index],
-                );
+            return RefreshIndicator(
+              onRefresh: () {
+                return _homeViewModel.load.execute();
               },
-              separatorBuilder: (context, index) => const SizedBox(
-                height: 10,
+              child: ListView.separated(
+                padding: const EdgeInsets.only(
+                  bottom: 150,
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                ),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return TaskCard(
+                    task: items[index],
+                  );
+                },
+                separatorBuilder: (context, index) => const SizedBox(
+                  height: 10,
+                ),
               ),
             );
           },

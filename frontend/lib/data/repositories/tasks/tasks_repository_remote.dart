@@ -16,25 +16,7 @@ class TasksRepositoryRemote extends TasksRepository {
         _sharedPreferencesService = sharedPreferencesService;
 
   final _log = Logger('TasksRepositoryRemote');
-
-  @override
-  Future<Result<List<TaskModel>>> getMyTasks() async {
-    final token = await _sharedPreferencesService.fetchToken();
-    switch (token) {
-      case Ok<String?>():
-        final result = await _apiClient.getTasksUserTasks(token.value!);
-        switch (result) {
-          case Ok<List<TaskModel>>():
-            return Result.ok(result.value);
-          case Error<List<TaskModel>>():
-            _log.severe('Failed to get tasks', result.error);
-            return Result.error(result.error);
-        }
-      case Error<String?>():
-        _log.severe('Failed to get token', token.error);
-        return Result.error(token.error);
-    }
-  }
+  List<TaskModel> _tasks = [];
 
   @override
   Future<Result<TaskModel>> getMyTaskById(String id) async {
@@ -63,6 +45,9 @@ class TasksRepositoryRemote extends TasksRepository {
         final result = await _apiClient.createTask(token.value!, task);
         switch (result) {
           case Ok<TaskModel>():
+            _log.finer('Successfully created task');
+            _tasks.add(result.value);
+            notifyListeners();
             return Result.ok(result.value);
           case Error<TaskModel>():
             _log.severe('Failed to create task', result.error);
@@ -82,6 +67,14 @@ class TasksRepositoryRemote extends TasksRepository {
         final result = await _apiClient.updateTask(token.value!, task);
         switch (result) {
           case Ok<TaskModel>():
+            final index = _tasks.indexWhere((t) => t.id == task.id);
+            if (index != -1) {
+              _tasks[index] = result.value; // Atualiza a tarefa
+            } else {
+              _tasks.add(result.value);
+            }
+            _log.finer('Successfully updated task');
+            notifyListeners(); // Notifica os ouvintes sobre a alteração
             return Result.ok(result.value);
           case Error<TaskModel>():
             _log.severe('Failed to update task', result.error);
@@ -92,4 +85,37 @@ class TasksRepositoryRemote extends TasksRepository {
         return Result.error(token.error);
     }
   }
+
+  @override
+  Future<Result<List<TaskModel>>> fethcTasks() async {
+    final tokenResult = await _sharedPreferencesService.fetchToken();
+    switch (tokenResult) {
+      case Ok<String?>():
+        final token = tokenResult.value;
+        if (token == null) {
+          _log.severe('Token is null');
+          _tasks.clear();
+          notifyListeners();
+          return Result.error(Exception('Token is null'));
+        }
+        final result = await _apiClient.getTasksUserTasks(token);
+        switch (result) {
+          case Ok<List<TaskModel>>():
+            _tasks = result.value;
+            _log.finer("Successfully fetched tasks");
+          case Error<List<TaskModel>>():
+            _log.severe('Failed to fetch tasks', result.error);
+        }
+        notifyListeners();
+        return result;
+      case Error<String?>():
+        _log.severe('Failed to get token', tokenResult.error);
+        _tasks.clear();
+        notifyListeners();
+        return Result.error(tokenResult.error);
+    }
+  }
+
+  @override
+  List<TaskModel> get tasks => _tasks;
 }

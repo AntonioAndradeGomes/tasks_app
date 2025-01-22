@@ -12,23 +12,21 @@ class HomeViewModel extends ChangeNotifier {
     required TasksRepository tasksRepository,
   }) : _tasksRepository = tasksRepository {
     _log.finest('HomeViewModel created');
+    _tasksRepository.addListener(_onTasksChanged);
     load = Command0(_load)..execute();
   }
 
   final _log = Logger('HomeViewModel');
 
-  List<TaskModel> _tasks = [];
-
-  List<TaskModel> get tasks => _tasks;
+  List<TaskModel> get tasks => _tasksRepository.tasks;
 
   late Command0 load;
 
   Future<Result> _load() async {
     try {
-      final result = await _tasksRepository.getMyTasks();
+      final result = await _tasksRepository.fethcTasks();
       switch (result) {
         case Ok<List<TaskModel>>():
-          _tasks = result.value;
           _log.finest('Tasks loaded');
         case Error<List<TaskModel>>():
           _log.warning('Error loading tasks: ${result.error}');
@@ -39,13 +37,13 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  void addTask(TaskModel task) {
-    final index = _tasks.indexWhere((element) => element.id == task.id);
-    if (index == -1) {
-      _tasks.add(task);
-    } else {
-      _tasks[index] = task;
-    }
+  void _onTasksChanged() {
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _tasksRepository.removeListener(_onTasksChanged);
+    super.dispose();
   }
 }
