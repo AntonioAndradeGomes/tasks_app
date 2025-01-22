@@ -85,8 +85,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
+                  final task = items[index];
                   return TaskCard(
                     task: items[index],
+                    onPressed: () {
+                      _homeViewModel.updateTask.execute(task);
+                    },
                   );
                 },
                 separatorBuilder: (context, index) => const SizedBox(

@@ -5,6 +5,7 @@ import 'package:frontend/data/repositories/tasks/tasks_repository_remote.dart';
 import 'package:frontend/data/services/api/auth_api_client.dart';
 import 'package:frontend/data/services/api/tasks_api_client.dart';
 import 'package:frontend/data/services/shared_preferences_service.dart';
+import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/task_show_use_case.dart';
 import 'package:frontend/ui/auth/login/view_models/login_view_model.dart';
@@ -54,8 +55,15 @@ Future<void> setupDependencies() async {
   );
 
   getIt.registerLazySingleton(
+    () => CheckOrUncheckTaskUseCase(
+      repository: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
     () => HomeViewModel(
       tasksRepository: getIt(),
+      checkOrUncheckTaskUseCase: getIt(),
     ),
   );
 

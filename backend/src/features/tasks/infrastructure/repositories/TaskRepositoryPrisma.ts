@@ -46,6 +46,9 @@ export class TaskRepositoryPrisma implements TaskRepository{
         return this.prisma.task.findMany({
             where: {
                 user_id: userId
+            },
+            orderBy: {
+                created_at: "desc"
             }
         });
     }

@@ -1,19 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/domain/models/task_model.dart';
+import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dart';
 import 'package:frontend/utils/command.dart';
 import 'package:frontend/utils/result.dart';
 import 'package:logging/logging.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final TasksRepository _tasksRepository;
+  final CheckOrUncheckTaskUseCase _checkOrUncheckTaskUseCase;
 
   HomeViewModel({
     required TasksRepository tasksRepository,
-  }) : _tasksRepository = tasksRepository {
+    required CheckOrUncheckTaskUseCase checkOrUncheckTaskUseCase,
+  })  : _tasksRepository = tasksRepository,
+        _checkOrUncheckTaskUseCase = checkOrUncheckTaskUseCase {
     _log.finest('HomeViewModel created');
     _tasksRepository.addListener(_onTasksChanged);
     load = Command0(_load)..execute();
+    updateTask = Command1<void, TaskModel>(_updateTask);
   }
 
   final _log = Logger('HomeViewModel');
@@ -21,6 +26,7 @@ class HomeViewModel extends ChangeNotifier {
   List<TaskModel> get tasks => _tasksRepository.tasks;
 
   late Command0 load;
+  late final Command1<void, TaskModel> updateTask;
 
   Future<Result> _load() async {
     try {
@@ -30,6 +36,21 @@ class HomeViewModel extends ChangeNotifier {
           _log.finest('Tasks loaded');
         case Error<List<TaskModel>>():
           _log.warning('Error loading tasks: ${result.error}');
+      }
+      return result;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<Result> _updateTask(TaskModel task) async {
+    try {
+      final result = await _checkOrUncheckTaskUseCase.call(task);
+      switch (result) {
+        case Ok<TaskModel>():
+          _log.finest('Task updated');
+        case Error<TaskModel>():
+          _log.warning('Error updating task: ${result.error}');
       }
       return result;
     } finally {

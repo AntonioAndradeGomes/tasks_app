@@ -46,7 +46,7 @@ class TasksRepositoryRemote extends TasksRepository {
         switch (result) {
           case Ok<TaskModel>():
             _log.finer('Successfully created task');
-            _tasks.add(result.value);
+            _tasks.insert(0, result.value);
             notifyListeners();
             return Result.ok(result.value);
           case Error<TaskModel>():
@@ -71,7 +71,7 @@ class TasksRepositoryRemote extends TasksRepository {
             if (index != -1) {
               _tasks[index] = result.value; // Atualiza a tarefa
             } else {
-              _tasks.add(result.value);
+              _tasks.insert(0, result.value);
             }
             _log.finer('Successfully updated task');
             notifyListeners(); // Notifica os ouvintes sobre a alteração
