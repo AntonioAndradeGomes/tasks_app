@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/config/dependencies_injector.dart';
+import 'package:frontend/domain/models/task_model.dart';
+import 'package:frontend/ui/home/view_model/home_view_model.dart';
 import 'package:frontend/ui/task/view_model/show_task_viewmodel.dart';
 import 'package:frontend/ui/task/widgets/task_editable_body_widget.dart';
+import 'package:frontend/utils/result.dart';
 
 class ShowTaskPage extends StatefulWidget {
   final String? taskId;
@@ -21,7 +24,14 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
   void initState() {
     _showTaskViewmodel = getIt<ShowTaskViewmodel>();
     _showTaskViewmodel.loadTask.execute(widget.taskId);
+    _showTaskViewmodel.saveTask.addListener(_resultSave);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _showTaskViewmodel.saveTask.removeListener(_resultSave);
+    super.dispose();
   }
 
   @override
@@ -49,11 +59,41 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
             }
             return child!;
           },
-          child: TaskEditableBodyWidget(
-            showTaskViewmodel: _showTaskViewmodel,
+          child: ListenableBuilder(
+            listenable: _showTaskViewmodel.saveTask,
+            builder: (context, child) {
+              return TaskEditableBodyWidget(
+                showTaskViewmodel: _showTaskViewmodel,
+                running: _showTaskViewmodel.saveTask.running,
+              );
+            },
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _resultSave() async {
+    if (_showTaskViewmodel.saveTask.completed) {
+      getIt<HomeViewModel>()
+          .addTask((_showTaskViewmodel.saveTask.result as Ok<TaskModel>).value);
+      _showTaskViewmodel.saveTask.clearResult();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Task saved'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+    if (_showTaskViewmodel.saveTask.error) {
+      _showTaskViewmodel.saveTask.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error saving task'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

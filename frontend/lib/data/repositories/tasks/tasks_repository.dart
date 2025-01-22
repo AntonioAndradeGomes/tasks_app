@@ -4,4 +4,6 @@ import 'package:frontend/utils/result.dart';
 abstract class TasksRepository {
   Future<Result<List<TaskModel>>> getMyTasks();
   Future<Result<TaskModel>> getMyTaskById(String id);
+  Future<Result<TaskModel>> createTask(TaskModel task);
+  Future<Result<TaskModel>> updateTask(TaskModel task);
 }

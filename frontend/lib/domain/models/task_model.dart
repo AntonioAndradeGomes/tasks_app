@@ -15,23 +15,24 @@ extension TaskModelDateFormatter on TaskModel {
   }
 }
 
+// ignore: must_be_immutable
 class TaskModel extends Equatable {
   final String? id;
-  final String title;
-  final String? description;
-  final String hexColor;
+  String title;
+  String? description;
+  String? hexColor;
   final String? userId;
-  final DateTime? dueAt;
-  final DateTime? completedAt;
+  DateTime? dueAt;
+  DateTime? completedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  const TaskModel({
-    required this.id,
+  TaskModel({
+    this.id,
     required this.title,
-    required this.description,
-    required this.hexColor,
-    required this.userId,
+    this.description,
+    this.hexColor,
+    this.userId,
     this.dueAt,
     this.completedAt,
     this.createdAt,
@@ -62,45 +63,13 @@ class TaskModel extends Equatable {
     );
   }
 
-  TaskModel taskWithDueAt(DateTime? dueAt) {
-    return TaskModel(
-      id: id,
-      title: title,
-      description: description,
-      hexColor: hexColor,
-      userId: userId,
-      dueAt: dueAt,
-      completedAt: completedAt,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    );
-  }
-
-  TaskModel taskWithChecked(DateTime? completedAt) {
-    return TaskModel(
-      id: id,
-      title: title,
-      description: description,
-      hexColor: hexColor,
-      userId: userId,
-      dueAt: dueAt,
-      completedAt: completedAt,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    );
-  }
-
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
       'title': title,
       'description': description,
-      'hexColor': hexColor,
-      'user_id': userId,
+      'hexColor': hexColor?.toUpperCase(),
       'due_at': dueAt?.toIso8601String(),
       'completed_at': completedAt?.toIso8601String(),
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 
@@ -110,7 +79,7 @@ class TaskModel extends Equatable {
       title: map['title'] as String,
       description:
           map['description'] != null ? map['description'] as String : null,
-      hexColor: map['hexColor'] as String,
+      hexColor: (map['hexColor'] as String).toUpperCase(),
       userId: map['user_id'] as String,
       dueAt: map['due_at'] != null
           ? DateTime.parse(map['due_at'] as String)
@@ -130,9 +99,9 @@ class TaskModel extends Equatable {
   @override
   List<Object?> get props => [
         id,
-        title,
-        description,
-        hexColor,
+        title.trim(),
+        description?.trim(),
+        hexColor?.toUpperCase(),
         userId,
         dueAt,
         completedAt,

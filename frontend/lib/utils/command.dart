@@ -30,7 +30,7 @@ abstract class Command<T> extends ChangeNotifier {
     _running = true;
     _result = null;
     notifyListeners();
-    //await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
     try {
       _result = await action();
     } finally {

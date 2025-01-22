@@ -83,4 +83,68 @@ class TasksApiClient {
       );
     }
   }
+
+  Future<Result<TaskModel>> createTask(String token, TaskModel task) async {
+    try {
+      final response = await _dio.post(
+        '/',
+        options: Options(
+          headers: {
+            'x-auth-token': token,
+          },
+        ),
+        data: task.toMap(),
+      );
+      if (response.statusCode == 201) {
+        return Result.ok(TaskModel.fromMap(response.data));
+      } else {
+        return const Result.error(
+          CustomException(
+            message: 'Create task failed',
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      return Result.error(
+        CustomException(
+          message: e.response?.data['message'] ?? 'Create task failed',
+          errors: e.response?.data['errors'],
+          statusCode: e.response?.statusCode,
+          status: e.response?.data['status'],
+        ),
+      );
+    }
+  }
+
+  Future<Result<TaskModel>> updateTask(String token, TaskModel task) async {
+    try {
+      final response = await _dio.put(
+        '/${task.id}',
+        options: Options(
+          headers: {
+            'x-auth-token': token,
+          },
+        ),
+        data: task.toMap(),
+      );
+      if (response.statusCode == 200) {
+        return Result.ok(TaskModel.fromMap(response.data));
+      } else {
+        return const Result.error(
+          CustomException(
+            message: 'Update task failed',
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      return Result.error(
+        CustomException(
+          message: e.response?.data['message'] ?? 'Update task failed',
+          errors: e.response?.data['errors'],
+          statusCode: e.response?.statusCode,
+          status: e.response?.data['status'],
+        ),
+      );
+    }
+  }
 }

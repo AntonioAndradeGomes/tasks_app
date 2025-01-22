@@ -74,7 +74,12 @@ class _HomePageState extends State<HomePage> {
           builder: (_, __) {
             final items = _homeViewModel.tasks;
             return ListView.separated(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.only(
+                bottom: 150,
+                top: 10,
+                left: 10,
+                right: 10,
+              ),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 return TaskCard(

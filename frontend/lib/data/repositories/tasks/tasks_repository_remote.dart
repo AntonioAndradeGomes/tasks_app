@@ -54,4 +54,42 @@ class TasksRepositoryRemote extends TasksRepository {
         return Result.error(token.error);
     }
   }
+
+  @override
+  Future<Result<TaskModel>> createTask(TaskModel task) async {
+    final token = await _sharedPreferencesService.fetchToken();
+    switch (token) {
+      case Ok<String?>():
+        final result = await _apiClient.createTask(token.value!, task);
+        switch (result) {
+          case Ok<TaskModel>():
+            return Result.ok(result.value);
+          case Error<TaskModel>():
+            _log.severe('Failed to create task', result.error);
+            return Result.error(result.error);
+        }
+      case Error<String?>():
+        _log.severe('Failed to get token', token.error);
+        return Result.error(token.error);
+    }
+  }
+
+  @override
+  Future<Result<TaskModel>> updateTask(TaskModel task) async {
+    final token = await _sharedPreferencesService.fetchToken();
+    switch (token) {
+      case Ok<String?>():
+        final result = await _apiClient.updateTask(token.value!, task);
+        switch (result) {
+          case Ok<TaskModel>():
+            return Result.ok(result.value);
+          case Error<TaskModel>():
+            _log.severe('Failed to update task', result.error);
+            return Result.error(result.error);
+        }
+      case Error<String?>():
+        _log.severe('Failed to get token', token.error);
+        return Result.error(token.error);
+    }
+  }
 }

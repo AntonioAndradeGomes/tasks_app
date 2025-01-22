@@ -13,7 +13,7 @@ class TaskCard extends StatelessWidget {
     final completed = task.completedAt != null;
     return Ink(
       decoration: BoxDecoration(
-        color: hexToColor(task.hexColor),
+        color: task.hexColor != null ? hexToColor(task.hexColor!) : Colors.grey,
         borderRadius: BorderRadius.circular(10),
       ),
       child: InkWell(

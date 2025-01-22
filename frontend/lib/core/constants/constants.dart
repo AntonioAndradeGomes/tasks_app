@@ -19,6 +19,6 @@ abstract class Constants {
     "#008B8B",
     "#6B8E23",
     "#BDB76B",
-    "#8B4513",
+    "#8B4512",
   ];
 }

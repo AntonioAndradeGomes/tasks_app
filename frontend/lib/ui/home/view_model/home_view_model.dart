@@ -38,4 +38,14 @@ class HomeViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void addTask(TaskModel task) {
+    final index = _tasks.indexWhere((element) => element.id == task.id);
+    if (index == -1) {
+      _tasks.add(task);
+    } else {
+      _tasks[index] = task;
+    }
+    notifyListeners();
+  }
 }
