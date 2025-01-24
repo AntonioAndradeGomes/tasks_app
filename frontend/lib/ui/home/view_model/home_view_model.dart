@@ -19,6 +19,7 @@ class HomeViewModel extends ChangeNotifier {
     _tasksRepository.addListener(_onTasksChanged);
     load = Command0(_load)..execute();
     updateTask = Command1<void, TaskModel>(_updateTask);
+    deleteTask = Command1<void, String>(_deleteTask);
   }
 
   final _log = Logger('HomeViewModel');
@@ -27,10 +28,11 @@ class HomeViewModel extends ChangeNotifier {
 
   late Command0 load;
   late final Command1<void, TaskModel> updateTask;
+  late final Command1<void, String> deleteTask;
 
   Future<Result> _load() async {
     try {
-      final result = await _tasksRepository.fethcTasks();
+      final result = await _tasksRepository.fetchTasks();
       switch (result) {
         case Ok<List<TaskModel>>():
           _log.finest('Tasks loaded');
@@ -51,6 +53,21 @@ class HomeViewModel extends ChangeNotifier {
           _log.finest('Task updated');
         case Error<TaskModel>():
           _log.warning('Error updating task: ${result.error}');
+      }
+      return result;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<Result> _deleteTask(String id) async {
+    try {
+      final result = await _tasksRepository.deleteTask(id);
+      switch (result) {
+        case Ok<void>():
+          _log.finest('Task deleted');
+        case Error<void>():
+          _log.warning('Error deleting task: ${result.error}');
       }
       return result;
     } finally {

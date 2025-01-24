@@ -147,4 +147,35 @@ class TasksApiClient {
       );
     }
   }
+
+  Future<Result<void>> deleteTask(String token, String taskId) async {
+    try {
+      final response = await _dio.delete(
+        '/$taskId',
+        options: Options(
+          headers: {
+            'x-auth-token': token,
+          },
+        ),
+      );
+      if (response.statusCode == 204) {
+        return const Result.ok(null);
+      } else {
+        return const Result.error(
+          CustomException(
+            message: 'Delete task failed',
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      return Result.error(
+        CustomException(
+          message: e.response?.data['message'] ?? 'Delete task failed',
+          errors: e.response?.data['errors'],
+          statusCode: e.response?.statusCode,
+          status: e.response?.data['status'],
+        ),
+      );
+    }
+  }
 }

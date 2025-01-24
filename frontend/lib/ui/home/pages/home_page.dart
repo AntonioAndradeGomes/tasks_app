@@ -4,6 +4,7 @@ import 'package:frontend/routing/routes.dart';
 import 'package:frontend/ui/auth/logout/logout_viewmodel.dart';
 import 'package:frontend/ui/home/view_model/home_view_model.dart';
 import 'package:frontend/ui/home/widgets/task_card.dart';
+import 'package:frontend/ui/home/widgets/tasks_shimmer_list_widget.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,12 +23,14 @@ class _HomePageState extends State<HomePage> {
     _logoutViewModel = getIt<LogoutViewmodel>();
     _homeViewModel = getIt<HomeViewModel>();
     _logoutViewModel.logout.addListener(_resultLogout);
+    _homeViewModel.deleteTask.addListener(_resultDelete);
     super.initState();
   }
 
   @override
   void dispose() {
     _logoutViewModel.logout.removeListener(_resultLogout);
+    _homeViewModel.deleteTask.removeListener(_resultDelete);
     super.dispose();
   }
 
@@ -52,16 +55,14 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push(Routes.task);
-        },
+        onPressed: () => context.push(Routes.task),
         child: const Icon(Icons.add),
       ),
       body: ListenableBuilder(
         listenable: _homeViewModel.load,
         builder: (_, child) {
           if (_homeViewModel.load.running) {
-            return const Center(child: CircularProgressIndicator());
+            return const TasksShimmerListWidget();
           }
           if (_homeViewModel.load.error) {
             return const Center(child: Text('Error loading tasks'));
@@ -88,8 +89,13 @@ class _HomePageState extends State<HomePage> {
                   final task = items[index];
                   return TaskCard(
                     task: items[index],
-                    onPressed: () {
-                      _homeViewModel.updateTask.execute(task);
+                    onPressed: () => _homeViewModel.updateTask.execute(task),
+                    confirmDismiss: (direction) async {
+                      await _homeViewModel.deleteTask.execute(task.id!);
+                      if (_homeViewModel.deleteTask.completed) {
+                        return true;
+                      }
+                      return false;
                     },
                   );
                 },
@@ -110,6 +116,28 @@ class _HomePageState extends State<HomePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Logout failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _resultDelete() async {
+    if (_homeViewModel.deleteTask.completed) {
+      _logoutViewModel.logout.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Task Deleted'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+
+    if (_homeViewModel.deleteTask.error) {
+      _homeViewModel.deleteTask.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error deleting task'),
           backgroundColor: Colors.red,
         ),
       );

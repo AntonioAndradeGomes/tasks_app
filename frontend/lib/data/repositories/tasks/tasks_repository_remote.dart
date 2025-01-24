@@ -87,7 +87,7 @@ class TasksRepositoryRemote extends TasksRepository {
   }
 
   @override
-  Future<Result<List<TaskModel>>> fethcTasks() async {
+  Future<Result<List<TaskModel>>> fetchTasks() async {
     final tokenResult = await _sharedPreferencesService.fetchToken();
     switch (tokenResult) {
       case Ok<String?>():
@@ -118,4 +118,26 @@ class TasksRepositoryRemote extends TasksRepository {
 
   @override
   List<TaskModel> get tasks => _tasks;
+
+  @override
+  Future<Result<void>> deleteTask(String id) async {
+    final tokenResult = await _sharedPreferencesService.fetchToken();
+    switch (tokenResult) {
+      case Ok<String?>():
+        final result = await _apiClient.deleteTask(tokenResult.value!, id);
+        switch (result) {
+          case Ok<void>():
+            _tasks.removeWhere((t) => t.id == id);
+            _log.finer('Successfully deleted task');
+            notifyListeners();
+            return const Result.ok(null);
+          case Error<void>():
+            _log.severe('Failed to delete task', result.error);
+            return Result.error(result.error);
+        }
+      case Error<String?>():
+        _log.severe('Failed to get token', tokenResult.error);
+        return Result.error(tokenResult.error);
+    }
+  }
 }
