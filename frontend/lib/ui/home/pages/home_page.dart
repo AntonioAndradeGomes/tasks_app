@@ -35,6 +35,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+
+  /// Builds the home page widget tree.
+  ///
+  /// The home page widget tree is a Scaffold with an app bar, floating action
+  /// button, and a body. The app bar has a logout button, the floating action
+  /// button creates a new task, and the body displays the list of tasks.
+  ///
+  /// The body is a ListenableBuilder that listens to the load task list use
+  /// case. If the use case is running, it displays a shimmer list. If the use
+  /// case has an error, it displays an error message. Otherwise, it displays a
+  /// list of tasks.
+  ///
+  /// The list is a ListView of TaskCards, each of which displays a task and has
+  /// two actions: edit and delete. The edit action navigates to the task edit
+  /// page, and the delete action calls the delete task use case.
+  ///
+  /// The list is wrapped in a RefreshIndicator that calls the load task list
+  /// use case when the user refreshes the list.
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -54,9 +72,18 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(Routes.task),
-        child: const Icon(Icons.add),
+      floatingActionButton: ListenableBuilder(
+        listenable: _homeViewModel.load,
+        builder: (_, child) {
+          if (_homeViewModel.load.completed) {
+            return child!;
+          }
+          return const SizedBox();
+        },
+        child: FloatingActionButton(
+          onPressed: () => context.push(Routes.task),
+          child: const Icon(Icons.add),
+        ),
       ),
       body: ListenableBuilder(
         listenable: _homeViewModel.load,
@@ -73,6 +100,9 @@ class _HomePageState extends State<HomePage> {
           listenable: _homeViewModel,
           builder: (_, __) {
             final items = _homeViewModel.tasks;
+            if (items.isEmpty) {
+              return const Center(child: Text('No tasks'));
+            }
             return RefreshIndicator(
               onRefresh: () {
                 return _homeViewModel.load.execute();

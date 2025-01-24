@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/domain/models/task_model.dart';
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/task_show_use_case.dart';
@@ -10,15 +11,19 @@ class ShowTaskViewmodel extends ChangeNotifier {
   final _log = Logger('ShowTaskViewmodel');
   final TaskShowUseCase _taskShowUseCase;
   final SaveTaskUseCase _saveTaskUseCase;
+  final TasksRepository _tasksRepository;
 
   ShowTaskViewmodel({
     required TaskShowUseCase taskShowUseCase,
     required SaveTaskUseCase saveTaskUseCase,
+    required TasksRepository tasksRepository,
   })  : _taskShowUseCase = taskShowUseCase,
-        _saveTaskUseCase = saveTaskUseCase {
+        _saveTaskUseCase = saveTaskUseCase,
+        _tasksRepository = tasksRepository {
     _log.finest('HomeViewModel created');
     loadTask = Command1<void, String?>(_load);
     saveTask = Command0<TaskModel>(_save);
+    deleteTask = Command0<void>(_delete);
   }
   //essa task só vai servir para comparar com _editableTask
   TaskModel? _task;
@@ -31,6 +36,7 @@ class ShowTaskViewmodel extends ChangeNotifier {
 
   late final Command1<void, String?> loadTask;
   late final Command0<TaskModel> saveTask;
+  late final Command0<void> deleteTask;
 
   Future<Result<void>> _load(String? id) async {
     final result = await _taskShowUseCase.call(id);
@@ -56,6 +62,17 @@ class ShowTaskViewmodel extends ChangeNotifier {
         notifyListeners();
       case Error<TaskModel>():
         _log.warning('Error saving task: ${result.error}');
+    }
+    return result;
+  }
+
+  Future<Result<void>> _delete() async {
+    final result = await _tasksRepository.deleteTask(_editableTask!.id!);
+    switch (result) {
+      case Ok<void>():
+        _log.finest('Task deleted');
+      case Error<void>():
+        _log.warning('Error deleting task: ${result.error}');
     }
     return result;
   }

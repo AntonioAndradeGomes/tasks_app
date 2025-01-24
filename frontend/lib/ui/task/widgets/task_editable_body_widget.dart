@@ -82,6 +82,15 @@ class TaskEditableBodyWidget extends StatelessWidget {
                         },
                       ),
                     ),
+                    if (task.id != null)
+                      IconButton(
+                        onPressed: running
+                            ? null
+                            : showTaskViewmodel.deleteTask.execute,
+                        icon: const Icon(
+                          Icons.delete,
+                        ),
+                      )
                   ],
                 ),
                 TextFormField(

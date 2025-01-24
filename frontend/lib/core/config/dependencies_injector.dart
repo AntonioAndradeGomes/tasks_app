@@ -83,6 +83,7 @@ Future<void> setupDependencies() async {
     () => ShowTaskViewmodel(
       taskShowUseCase: getIt(),
       saveTaskUseCase: getIt(),
+      tasksRepository: getIt(),
     ),
   );
 }
