@@ -1,7 +1,6 @@
 abstract class Constants {
   static const String backendUrl = 'http://localhost:8000';
   static const List<String> colors = [
-    "#121212",
     "#6495ED",
     "#7B68EE",
     "#8A2BE2",

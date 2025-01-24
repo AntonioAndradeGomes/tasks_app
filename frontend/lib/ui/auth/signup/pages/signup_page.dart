@@ -155,9 +155,6 @@ class _SignupPageState extends State<SignupPage> {
                               },
                               child: const Text(
                                 'Cadastrar',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
                               ),
                             ),
                           const SizedBox(

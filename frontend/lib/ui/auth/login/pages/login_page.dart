@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                               child: const Text(
                                 'Entrar',
-                                style: TextStyle(color: Colors.white),
+                                // style: TextStyle(color: Colors.white),
                               ),
                             ),
                           const SizedBox(
