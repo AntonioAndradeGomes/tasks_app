@@ -25,6 +25,20 @@ class HomeViewModel extends ChangeNotifier {
   final _log = Logger('HomeViewModel');
 
   List<TaskModel> get tasks => _tasksRepository.tasks;
+  List<TaskModel> get completedTasks =>
+      tasks.where((task) => task.completedAt != null).toList();
+  List<TaskModel> get uncompletedTasks =>
+      tasks.where((task) => task.completedAt == null).toList();
+
+  bool _showCompleted = true;
+  bool get showCompleted => _showCompleted;
+  set showCompleted(bool value) {
+    if (value == _showCompleted) {
+      return;
+    }
+    _showCompleted = value;
+    notifyListeners();
+  }
 
   late Command0 load;
   late final Command1<void, TaskModel> updateTask;

@@ -57,41 +57,43 @@ class TaskCard extends StatelessWidget {
             onTap: () {
               context.push(Routes.taskWithId(task.id!));
             },
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: onPressed,
-                        iconSize: 25,
-                        padding: EdgeInsets.zero,
-                        icon: Icon(
-                          !completed
-                              ? Icons.circle_outlined
-                              : Icons.check_circle,
-                          color: Colors.white,
-                        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: onPressed,
+                      iconSize: 25,
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        !completed ? Icons.circle_outlined : Icons.check_circle,
+                        color: Colors.white,
                       ),
-                      Text(
-                        task.title,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          decoration:
-                              completed ? TextDecoration.lineThrough : null,
-                          decorationColor: Colors.white,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      task.title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        decoration:
+                            completed ? TextDecoration.lineThrough : null,
+                        decorationColor: Colors.white,
                       ),
-                    ],
-                  ),
-                  task.description != null
-                      ? Text(
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                task.description != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(
+                          left: 15,
+                          bottom: 5,
+                          right: 5,
+                        ),
+                        child: Text(
                           task.description ?? '',
                           style: TextStyle(
                             fontSize: 14,
@@ -102,10 +104,10 @@ class TaskCard extends StatelessWidget {
                           ),
                           maxLines: 4,
                           overflow: TextOverflow.ellipsis,
-                        )
-                      : const SizedBox(),
-                ],
-              ),
+                        ),
+                      )
+                    : const SizedBox(),
+              ],
             ),
           ),
         ),

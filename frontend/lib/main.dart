@@ -8,6 +8,7 @@ import 'package:logging/logging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   Logger.root.level = Level.ALL;
   await setupDependencies();
   runApp(

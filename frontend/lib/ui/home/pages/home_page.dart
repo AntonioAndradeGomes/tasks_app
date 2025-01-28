@@ -18,6 +18,8 @@ class _HomePageState extends State<HomePage> {
   late LogoutViewmodel _logoutViewModel;
   late HomeViewModel _homeViewModel;
 
+  final ValueNotifier<bool> _showCompletedTasks = ValueNotifier<bool>(true);
+
   @override
   void initState() {
     _logoutViewModel = getIt<LogoutViewmodel>();
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _showCompletedTasks.dispose();
     _logoutViewModel.logout.removeListener(_resultLogout);
     _homeViewModel.deleteTask.removeListener(_resultDelete);
     super.dispose();
@@ -74,7 +77,11 @@ class _HomePageState extends State<HomePage> {
             return const TasksShimmerListWidget();
           }
           if (_homeViewModel.load.error) {
-            return const Center(child: Text('Error loading tasks'));
+            return const Center(
+              child: Text(
+                'Error loading tasks',
+              ),
+            );
           }
           return child!;
         },
@@ -83,37 +90,122 @@ class _HomePageState extends State<HomePage> {
           builder: (_, __) {
             final items = _homeViewModel.tasks;
             if (items.isEmpty) {
-              return const Center(child: Text('No tasks'));
+              return const Center(
+                child: Text(
+                  'No tasks',
+                ),
+              );
             }
             return RefreshIndicator(
               onRefresh: () {
                 return _homeViewModel.load.execute();
               },
-              child: ListView.separated(
+              child: ListView(
                 padding: const EdgeInsets.only(
                   bottom: 150,
                   top: 10,
                   left: 10,
                   right: 10,
                 ),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final task = items[index];
-                  return TaskCard(
-                    task: items[index],
-                    onPressed: () => _homeViewModel.updateTask.execute(task),
-                    confirmDismiss: (direction) async {
-                      await _homeViewModel.deleteTask.execute(task.id!);
-                      if (_homeViewModel.deleteTask.completed) {
-                        return true;
-                      }
-                      return false;
-                    },
-                  );
-                },
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: 10,
-                ),
+                children: [
+                  ..._homeViewModel.uncompletedTasks.map(
+                    (task) => TaskCard(
+                      task: task,
+                      onPressed: () => _homeViewModel.updateTask.execute(task),
+                      confirmDismiss: (direction) async {
+                        await _homeViewModel.deleteTask.execute(task.id!);
+                        if (_homeViewModel.deleteTask.completed) {
+                          return true;
+                        }
+                        return false;
+                      },
+                    ),
+                  ),
+                  if (_homeViewModel.completedTasks.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 140,
+                          child: Card(
+                            elevation: 0,
+                            color: Colors.grey.withAlpha(150),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(10),
+                              onTap: () {
+                                _homeViewModel.showCompleted =
+                                    !_homeViewModel.showCompleted;
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      'Concluded',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Icon(
+                                      //Icons.keyboard_arrow_right_rounded,
+                                      _homeViewModel.showCompleted
+                                          ? Icons.keyboard_arrow_down_rounded
+                                          : Icons.keyboard_arrow_right_rounded,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          child: _homeViewModel.showCompleted
+                              ? Column(
+                                  children: _homeViewModel.completedTasks
+                                      .map(
+                                        (task) => TaskCard(
+                                          task: task,
+                                          onPressed: () => _homeViewModel
+                                              .updateTask
+                                              .execute(task),
+                                          confirmDismiss: (direction) async {
+                                            await _homeViewModel.deleteTask
+                                                .execute(task.id!);
+                                            if (_homeViewModel
+                                                .deleteTask.completed) {
+                                              return true;
+                                            }
+                                            return false;
+                                          },
+                                        ),
+                                      )
+                                      .toList(),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        /*..._homeViewModel.completedTasks.map(
+                              (task) => TaskCard(
+                                task: task,
+                                onPressed: () =>
+                                    _homeViewModel.updateTask.execute(task),
+                                confirmDismiss: (direction) async {
+                                  await _homeViewModel.deleteTask
+                                      .execute(task.id!);
+                                  if (_homeViewModel.deleteTask.completed) {
+                                    return true;
+                                  }
+                                  return false;
+                                },
+                              ),
+                            ),*/
+                      ],
+                    )
+                ],
               ),
             );
           },
