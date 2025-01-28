@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-import { TaskRepository } from "../../../domain/interface/TaskRepository";
-import { TaskRepositoryPrisma } from "../TaskRepositoryPrisma";
+import { PrismaClient } from '@prisma/client';
+import { TaskRepository } from '../../../domain/interface/TaskRepository';
+import { TaskRepositoryPrisma } from '../TaskRepositoryPrisma';
 
 // Mock do Prisma Client
 jest.mock('@prisma/client', () => {
@@ -8,7 +8,7 @@ jest.mock('@prisma/client', () => {
         task: {
             findUnique: jest.fn(),
             create: jest.fn(),
-            findMany: jest.fn(),  
+            findMany: jest.fn(),
             delete: jest.fn(),
             update: jest.fn(),
         },
@@ -18,7 +18,7 @@ jest.mock('@prisma/client', () => {
 
 describe('TaskRepositoryPrisma', () => {
     let repository: TaskRepository;
-    let prisma: PrismaClient;    
+    let prisma: PrismaClient;
 
     beforeEach(() => {
         prisma = new PrismaClient();
@@ -30,37 +30,39 @@ describe('TaskRepositoryPrisma', () => {
     });
 
     it('deve retornar uma tarefa por ID', async () => {
-        const taskId = "task123";
+        const taskId = 'task123';
         const task = {
             id: taskId,
-            title: "Test Task",
-            description: "Test Description",
-            hexColor: "#FF0000",
-            user_id: "user123",
+            title: 'Test Task',
+            description: 'Test Description',
+            hexColor: '#FF0000',
+            user_id: 'user123',
             due_at: new Date(),
             completed_at: null,
         };
 
-        (prisma.task.findUnique as jest.Mock).mockResolvedValue(task);    
+        (prisma.task.findUnique as jest.Mock).mockResolvedValue(task);
 
         const result = await repository.getTaskById(taskId);
 
         expect(result).toEqual(task);
-        expect(prisma.task.findUnique).toHaveBeenCalledWith({ where: { id: taskId } });    
+        expect(prisma.task.findUnique).toHaveBeenCalledWith({
+            where: { id: taskId },
+        });
     });
 
     it('deve criar uma nova tarefa', async () => {
         const task = {
-            title: "Test Task",
-            description: "Test Description",
-            hexColor: "#FF0000",
-            user_id: "user123",
+            title: 'Test Task',
+            description: 'Test Description',
+            hexColor: '#FF0000',
+            user_id: 'user123',
             due_at: new Date(),
             completed_at: null,
         };
 
-        const createdTask ={
-            id: "task123",
+        const createdTask = {
+            id: 'task123',
             ...task,
             created_at: new Date(),
             updated_at: new Date(),
@@ -76,8 +78,24 @@ describe('TaskRepositoryPrisma', () => {
 
     it('deve retornar todas as tarefas', async () => {
         const tasks = [
-            {id: "task1", title: "Task 1", description: "Description 1", hexColor: "#FF0000", user_id: "user123", created_at: new Date(), updated_at: new Date()},
-            {id: "task2", title: "Task 2", description: "Description 2", hexColor: "#00FF00", user_id: "user456", created_at: new Date(), updated_at: new Date()},
+            {
+                id: 'task1',
+                title: 'Task 1',
+                description: 'Description 1',
+                hexColor: '#FF0000',
+                user_id: 'user123',
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                id: 'task2',
+                title: 'Task 2',
+                description: 'Description 2',
+                hexColor: '#00FF00',
+                user_id: 'user456',
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
         ];
 
         (prisma.task.findMany as jest.Mock).mockResolvedValue(tasks);
@@ -89,10 +107,26 @@ describe('TaskRepositoryPrisma', () => {
     });
 
     it('deve retornar as tarefas de um usuário', async () => {
-        const userId = "user123";
+        const userId = 'user123';
         const tasks = [
-            {id: "task1", title: "Task 1", description: "Description 1", hexColor: "#FF0000", user_id: "user123", created_at: new Date(), updated_at: new Date()},
-            {id: "task2", title: "Task 2", description: "Description 2", hexColor: "#00FF00", user_id: "user123", created_at: new Date(), updated_at: new Date()},
+            {
+                id: 'task1',
+                title: 'Task 1',
+                description: 'Description 1',
+                hexColor: '#FF0000',
+                user_id: 'user123',
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                id: 'task2',
+                title: 'Task 2',
+                description: 'Description 2',
+                hexColor: '#00FF00',
+                user_id: 'user123',
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
         ];
 
         (prisma.task.findMany as jest.Mock).mockResolvedValue(tasks);
@@ -100,28 +134,30 @@ describe('TaskRepositoryPrisma', () => {
         const result = await repository.getTasksByUserId(userId);
 
         expect(result).toEqual(tasks);
-        expect(prisma.task.findMany).toHaveBeenCalledWith({ where: { user_id: userId } });
+        expect(prisma.task.findMany).toHaveBeenCalledWith({
+            where: { user_id: userId },
+        });
     });
 
     it('deve atualizar uma tarefa', async () => {
         const task = {
-            id: "task123",
-            title: "Updated Task",
-            description: "Updated Description",
-            hexColor: "#00FF00",
-            user_id: "user123",
+            id: 'task123',
+            title: 'Updated Task',
+            description: 'Updated Description',
+            hexColor: '#00FF00',
+            user_id: 'user123',
             due_at: new Date(),
             completed_at: null,
         };
 
         const updatedTask = {
-            id: "task123",
-            title: "Updated Task",
-            description: "Updated Description",
-            hexColor: "#00FF00",
-            user_id: "user123",
+            id: 'task123',
+            title: 'Updated Task',
+            description: 'Updated Description',
+            hexColor: '#00FF00',
+            user_id: 'user123',
             due_at: new Date(),
-            completed_at: new Date(),   
+            completed_at: new Date(),
             created_at: new Date(),
             updated_at: new Date(),
         };
@@ -134,12 +170,12 @@ describe('TaskRepositoryPrisma', () => {
     });
 
     it('deve deletar uma tarefa', async () => {
-        const taskId = "task123";
+        const taskId = 'task123';
 
-        await repository.deleteTask(taskId);    
+        await repository.deleteTask(taskId);
 
-        expect(prisma.task.delete).toHaveBeenCalledWith({ where: { id: taskId } });
+        expect(prisma.task.delete).toHaveBeenCalledWith({
+            where: { id: taskId },
+        });
     });
-
-
 });

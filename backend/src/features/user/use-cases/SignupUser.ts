@@ -1,8 +1,7 @@
-
-import { AppError } from "../../../shared/errors/AppError";
-import { UserRepository } from "../domain/interfaces/UserRepository";
-import { HashService } from "../infrastructure/services/HashService";
-import { inject, injectable } from "tsyringe";
+import { AppError } from '../../../shared/errors/AppError';
+import { UserRepository } from '../domain/interfaces/UserRepository';
+import { HashService } from '../infrastructure/services/HashService';
+import { inject, injectable } from 'tsyringe';
 
 interface SignupUserRequest {
     name: string;
@@ -13,14 +12,14 @@ interface SignupUserRequest {
 @injectable()
 export class SignupUser {
     constructor(
-        @inject("UserRepository") private repository: UserRepository,
-        @inject("HashService") private hashService: HashService,
-    ){}
+        @inject('UserRepository') private repository: UserRepository,
+        @inject('HashService') private hashService: HashService,
+    ) {}
 
-    async execute( input: SignupUserRequest) {
+    async execute(input: SignupUserRequest) {
         const existingUser = await this.repository.findByEmail(input.email);
-        if(existingUser){
-            throw new AppError("User with this email already exists");
+        if (existingUser) {
+            throw new AppError('User with this email already exists');
         }
         const hashedPassword = await this.hashService.hash(input.password);
         const user = await this.repository.create({
@@ -31,6 +30,6 @@ export class SignupUser {
         // Remover o campo password antes de retornar
         const { password, ...userWithoutPassword } = user;
 
-        return userWithoutPassword;  // Retorna o usuário sem o campo password
+        return userWithoutPassword; // Retorna o usuário sem o campo password
     }
 }

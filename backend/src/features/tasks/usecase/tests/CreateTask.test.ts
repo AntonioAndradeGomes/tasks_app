@@ -1,6 +1,5 @@
-import { TaskRepository } from "../../domain/interface/TaskRepository";
-import { CreateTask } from "../CreateTask";
-
+import { TaskRepository } from '../../domain/interface/TaskRepository';
+import { CreateTask } from '../CreateTask';
 
 describe('CreateTask', () => {
     const taskRepository = {
@@ -11,10 +10,10 @@ describe('CreateTask', () => {
 
     it('deve criar uma nova tarefa', async () => {
         const task = {
-            title: "Test Task",
-            description: "Test Description",
-            hexColor: "#FF0000",
-            user_id: "user123",
+            title: 'Test Task',
+            description: 'Test Description',
+            hexColor: '#FF0000',
+            user_id: 'user123',
             due_at: new Date(),
             completed_at: null,
         };
@@ -29,19 +28,22 @@ describe('CreateTask', () => {
 
     it('deve lançar um erro se o repositório falhar', async () => {
         const task = {
-            title: "Test Task",
-            description: "Test Description",
-            hexColor: "#FF0000",
-            user_id: "user123",
+            title: 'Test Task',
+            description: 'Test Description',
+            hexColor: '#FF0000',
+            user_id: 'user123',
             due_at: new Date(),
             completed_at: null,
         };
 
-        taskRepository.createTask.mockRejectedValue(new Error('Failed to create task'));
+        taskRepository.createTask.mockRejectedValue(
+            new Error('Failed to create task'),
+        );
 
-        await expect(createTask.execute(task)).rejects.toThrow('Failed to create task');
+        await expect(createTask.execute(task)).rejects.toThrow(
+            'Failed to create task',
+        );
 
         expect(taskRepository.createTask).toHaveBeenCalledWith(task);
     });
-    
 });

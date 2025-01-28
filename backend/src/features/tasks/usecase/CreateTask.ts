@@ -1,7 +1,7 @@
-import { inject, injectable } from "tsyringe";
-import { TaskRepository } from "../domain/interface/TaskRepository";
+import { inject, injectable } from 'tsyringe';
+import { TaskRepository } from '../domain/interface/TaskRepository';
 
-interface TaskRequest{
+interface TaskRequest {
     title: string;
     description: string;
     hexColor: string;
@@ -13,8 +13,8 @@ interface TaskRequest{
 @injectable()
 export class CreateTask {
     constructor(
-      @inject("TaskRepository")   private taskRepository: TaskRepository,
-    ){}
+        @inject('TaskRepository') private taskRepository: TaskRepository,
+    ) {}
 
     async execute(input: TaskRequest) {
         return this.taskRepository.createTask(input);

@@ -1,10 +1,9 @@
+import { AppError } from '../../../../shared/errors/AppError';
+import { UserEntity } from '../../domain/entities/UserEntity';
+import { UserRepository } from '../../domain/interfaces/UserRepository';
+import { HashServiceInterface } from '../../infrastructure/services/HashService';
 
-import { AppError } from "../../../../shared/errors/AppError";
-import { UserEntity } from "../../domain/entities/UserEntity";
-import { UserRepository } from "../../domain/interfaces/UserRepository";
-import {HashServiceInterface } from "../../infrastructure/services/HashService";
-
-import { SignupUser } from "../SignupUser";
+import { SignupUser } from '../SignupUser';
 
 describe('SignupUser', () => {
     let signupUser: SignupUser;
@@ -20,24 +19,24 @@ describe('SignupUser', () => {
         };
         hashService = {
             hash: jest.fn(),
-            compare: jest.fn(),    
-        }
+            compare: jest.fn(),
+        };
         signupUser = new SignupUser(userRepository, hashService);
     });
 
-    it("deve lançar um erro se um user com o mesmo email existir", async () => {
+    it('deve lançar um erro se um user com o mesmo email existir', async () => {
         //input
         const input = {
-            name: "any_name",
-            email: "teste@teste.com",
-            password: "any_password",
+            name: 'any_name',
+            email: 'teste@teste.com',
+            password: 'any_password',
         };
         //usuario com o mesmo email que já existe
-        const user : UserEntity = {
-            id: "any_id",
-            name: "any_name",
-            email: "teste@teste.com",
-            password: "any_password",
+        const user: UserEntity = {
+            id: 'any_id',
+            name: 'any_name',
+            email: 'teste@teste.com',
+            password: 'any_password',
             created_at: new Date(),
             updated_at: new Date(),
         };
@@ -45,24 +44,26 @@ describe('SignupUser', () => {
         //mockResolvedValueOnce: Indica que, quando chamado, retornará o objeto user.
         userRepository.findByEmail.mockResolvedValueOnce(user);
 
-        await expect(signupUser.execute(input)).rejects.toThrow(new AppError("User with this email already exists"));
-        
+        await expect(signupUser.execute(input)).rejects.toThrow(
+            new AppError('User with this email already exists'),
+        );
+
         expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
         expect(userRepository.create).not.toHaveBeenCalled();
     });
 
-    it("deve criar um usuário com uma senha hashada corretamente", async () => {
+    it('deve criar um usuário com uma senha hashada corretamente', async () => {
         //input
         const input = {
-            name: "any_name",
-            email: "teste@teste.com",
-            password: "any_password",
+            name: 'any_name',
+            email: 'teste@teste.com',
+            password: 'any_password',
         };
-        const hashedPassword = "hashed_password";
-        const user : UserEntity = {
-            id: "any_id",
-            name: "any_name",
-            email: "teste@teste.com",
+        const hashedPassword = 'hashed_password';
+        const user: UserEntity = {
+            id: 'any_id',
+            name: 'any_name',
+            email: 'teste@teste.com',
             password: hashedPassword,
             created_at: new Date(),
             updated_at: new Date(),

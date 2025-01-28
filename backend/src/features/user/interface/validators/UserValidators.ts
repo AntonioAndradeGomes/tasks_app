@@ -1,4 +1,4 @@
-import { celebrate, Joi, Segments } from "celebrate";
+import { celebrate, Joi, Segments } from 'celebrate';
 
 const loginUserValidator = celebrate({
     [Segments.BODY]: Joi.object({
@@ -15,4 +15,4 @@ const signupUserValidator = celebrate({
     }),
 });
 
-export {loginUserValidator, signupUserValidator}
+export { loginUserValidator, signupUserValidator };

@@ -1,4 +1,4 @@
-import { HashService, HashServiceInterface } from "../HashService";
+import { HashService, HashServiceInterface } from '../HashService';
 
 describe('HashService', () => {
     let hashService: HashServiceInterface;
@@ -27,11 +27,14 @@ describe('HashService', () => {
 
         it('deve retornar false se as senhas forem diferentes', async () => {
             const password = 'any_password';
-            const wrongPassword = "wrongPassword";
+            const wrongPassword = 'wrongPassword';
             // Gera o hash da senha original
             const hashedPassword = await hashService.hash(password);
             // Compara a senha errada com o hash
-            const isMatch = await hashService.compare(wrongPassword, hashedPassword);
+            const isMatch = await hashService.compare(
+                wrongPassword,
+                hashedPassword,
+            );
             expect(isMatch).toBe(false); // A senha errada não deve coincidir com o hash
         });
     });

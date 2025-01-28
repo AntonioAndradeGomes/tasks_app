@@ -1,31 +1,31 @@
-import { inject, injectable } from "tsyringe";
-import { TaskRepository } from "../../domain/interface/TaskRepository";
-import { TaskEntity } from "../../domain/entities/TaskEntity";
-import { PrismaClient } from "@prisma/client";
+import { inject, injectable } from 'tsyringe';
+import { TaskRepository } from '../../domain/interface/TaskRepository';
+import { TaskEntity } from '../../domain/entities/TaskEntity';
+import { PrismaClient } from '@prisma/client';
 
 @injectable()
-export class TaskRepositoryPrisma implements TaskRepository{
-
-    constructor(
-        @inject("PrismaClient") private prisma: PrismaClient
-    ){}
-    getTaskByUserIdAndTaskId(userId: string, taskId: string): Promise<TaskEntity | null> {
+export class TaskRepositoryPrisma implements TaskRepository {
+    constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
+    getTaskByUserIdAndTaskId(
+        userId: string,
+        taskId: string,
+    ): Promise<TaskEntity | null> {
         return this.prisma.task.findUnique({
             where: {
                 id: taskId,
-                user_id: userId
-            }
-        })
+                user_id: userId,
+            },
+        });
     }
-    
+
     getTaskById(taskId: string): Promise<TaskEntity | null> {
         return this.prisma.task.findUnique({
             where: {
-                id: taskId
-            }
+                id: taskId,
+            },
         });
     }
-    
+
     getAllTasks(): Promise<TaskEntity[]> {
         return this.prisma.task.findMany();
     }
@@ -39,23 +39,23 @@ export class TaskRepositoryPrisma implements TaskRepository{
                 user_id: task.user_id,
                 due_at: task.due_at,
                 completed_at: task.completed_at,
-            }
+            },
         });
     }
     getTasksByUserId(userId: string): Promise<TaskEntity[]> {
         return this.prisma.task.findMany({
             where: {
-                user_id: userId
+                user_id: userId,
             },
             orderBy: {
-                created_at: "desc"
-            }
+                created_at: 'desc',
+            },
         });
     }
     updateTask(task: TaskEntity): Promise<TaskEntity> {
         return this.prisma.task.update({
             where: {
-                id: task.id
+                id: task.id,
             },
             data: {
                 title: task.title,
@@ -64,15 +64,15 @@ export class TaskRepositoryPrisma implements TaskRepository{
                 user_id: task.user_id,
                 due_at: task.due_at,
                 completed_at: task.completed_at,
-            }
+            },
         });
     }
 
     async deleteTask(taskId: string): Promise<void> {
         await this.prisma.task.delete({
             where: {
-                id: taskId
-            }
+                id: taskId,
+            },
         });
         return;
     }

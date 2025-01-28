@@ -1,5 +1,4 @@
 class AppError extends Error {
-  
     public readonly statusCode: number;
     constructor(message: string, statusCode = 400) {
         super(message);
@@ -14,4 +13,4 @@ class AppError extends Error {
     }
 }
 
-export {AppError}
+export { AppError };

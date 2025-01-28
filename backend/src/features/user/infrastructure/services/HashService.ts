@@ -1,7 +1,7 @@
-import bcrypt from "bcryptjs";
-import { injectable } from "tsyringe";
+import bcrypt from 'bcryptjs';
+import { injectable } from 'tsyringe';
 
-export interface HashServiceInterface { 
+export interface HashServiceInterface {
     hash(password: string): Promise<string>;
     compare(password: string, hash: string): Promise<boolean>;
 }
@@ -16,4 +16,3 @@ export class HashService implements HashServiceInterface {
         return bcrypt.compare(password, hash);
     }
 }
-

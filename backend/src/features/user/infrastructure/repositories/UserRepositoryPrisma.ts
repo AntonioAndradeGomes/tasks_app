@@ -1,26 +1,24 @@
-import { inject, injectable } from "tsyringe";
-import { PrismaClient } from "@prisma/client";
-import { UserEntity } from "../../domain/entities/UserEntity";
-import { UserRepository } from "../../domain/interfaces/UserRepository";
-
+import { inject, injectable } from 'tsyringe';
+import { PrismaClient } from '@prisma/client';
+import { UserEntity } from '../../domain/entities/UserEntity';
+import { UserRepository } from '../../domain/interfaces/UserRepository';
 
 @injectable()
-export class UserRepositoryPrisma implements UserRepository { 
+export class UserRepositoryPrisma implements UserRepository {
+    constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-    constructor(@inject("PrismaClient") private prisma: PrismaClient){}
-    
     findByEmail(email: string): Promise<UserEntity | null> {
         return this.prisma.user.findUnique({
             where: {
-                email: email
-            }
+                email: email,
+            },
         });
     }
     findById(id: string): Promise<UserEntity | null> {
         return this.prisma.user.findUnique({
             where: {
-                id: id
-            }
+                id: id,
+            },
         });
     }
 
@@ -33,8 +31,8 @@ export class UserRepositoryPrisma implements UserRepository {
             data: {
                 name: user.name,
                 email: user.email,
-                password: user.password
-            }
+                password: user.password,
+            },
         });
     }
 }

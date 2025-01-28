@@ -1,15 +1,13 @@
-import { inject, injectable } from "tsyringe";
-import { UserRepository } from "../domain/interfaces/UserRepository";
+import { inject, injectable } from 'tsyringe';
+import { UserRepository } from '../domain/interfaces/UserRepository';
 
 @injectable()
 export class GetUser {
-    constructor(
-        @inject("UserRepository") private repository: UserRepository,
-    ){}
+    constructor(@inject('UserRepository') private repository: UserRepository) {}
 
-    async execute(id: string){
+    async execute(id: string) {
         const user = await this.repository.findById(id);
-        if(!user){
+        if (!user) {
             return user;
         }
         // Remove o campo "password" do usuário

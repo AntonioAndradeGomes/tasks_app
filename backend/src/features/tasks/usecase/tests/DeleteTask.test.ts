@@ -1,6 +1,6 @@
-import { AppError } from "../../../../shared/errors/AppError";
-import { TaskRepository } from "../../domain/interface/TaskRepository";
-import { DeleteTask } from "../DeleteTask";
+import { AppError } from '../../../../shared/errors/AppError';
+import { TaskRepository } from '../../domain/interface/TaskRepository';
+import { DeleteTask } from '../DeleteTask';
 
 describe('DeleteTask', () => {
     let deleteTask: DeleteTask;
@@ -24,9 +24,9 @@ describe('DeleteTask', () => {
         const mockTask = {
             id: taskId,
             user_id: userId,
-            title: "Test Task",
-            description: "This is a test task",
-            hexColor: "#FF5733",
+            title: 'Test Task',
+            description: 'This is a test task',
+            hexColor: '#FF5733',
             due_at: new Date(),
             completed_at: null,
         };
@@ -41,17 +41,20 @@ describe('DeleteTask', () => {
         expect(mockTaskRepository.deleteTask).toHaveBeenCalledWith(taskId);
     });
 
-
     it('deve lançar um erro se a tarefa não for encontrada', async () => {
-        const taskId = "task-123";
-        const userId = "user-123";
+        const taskId = 'task-123';
+        const userId = 'user-123';
 
         // Mockando a tarefa como inexistente
         mockTaskRepository.getTaskById.mockResolvedValue(null);
 
         // Executando o caso de uso e verificando o erro
-        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow(AppError);
-        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow("Task not found");
+        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow(
+            AppError,
+        );
+        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow(
+            'Task not found',
+        );
 
         // Verificando se o método `getTaskById` foi chamado
         expect(mockTaskRepository.getTaskById).toHaveBeenCalledWith(taskId);
@@ -59,17 +62,17 @@ describe('DeleteTask', () => {
     });
 
     it('deve lançar um erro se o user nao for autorizado', async () => {
-        const taskId = "task-123";
-        const userId = "user-123";
-        const anotherUserId = "user-456";
+        const taskId = 'task-123';
+        const userId = 'user-123';
+        const anotherUserId = 'user-456';
 
         // Mockando a tarefa existente com outro usuário
         const mockTask = {
             id: taskId,
             user_id: anotherUserId,
-            title: "Test Task",
-            description: "This is a test task",
-            hexColor: "#FF5733",
+            title: 'Test Task',
+            description: 'This is a test task',
+            hexColor: '#FF5733',
             due_at: new Date(),
             completed_at: null,
         };
@@ -77,11 +80,15 @@ describe('DeleteTask', () => {
         mockTaskRepository.getTaskById.mockResolvedValue(mockTask);
 
         // Executando o caso de uso e verificando o erro
-        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow(AppError);
-        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow("You are not authorized to delete this task");
+        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow(
+            AppError,
+        );
+        await expect(deleteTask.execute(taskId, userId)).rejects.toThrow(
+            'You are not authorized to delete this task',
+        );
 
         // Verificando se o método `getTaskById` foi chamado
         expect(mockTaskRepository.getTaskById).toHaveBeenCalledWith(taskId);
         expect(mockTaskRepository.deleteTask).not.toHaveBeenCalled();
-    })
-})
+    });
+});
