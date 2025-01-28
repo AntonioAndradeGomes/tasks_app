@@ -32,10 +32,12 @@ export class TasksController {
 
     async getMyTasks(request: AuthRequest, response: Response) {
         const userId = request.user as string;
-        const { taskId } = request.query;
+        const { taskId, orderBy, order } = request.query;
         const tasks = await this.getMyTasksUseCase.execute({
             userId,
             taskId: typeof taskId == 'string' ? taskId : undefined,
+            orderBy: typeof orderBy == 'string' ? orderBy : undefined,
+            order: typeof order == 'string' ? order : undefined,
         });
         response.status(200).send(tasks);
     }

@@ -6,6 +6,7 @@ import { PrismaClient } from '@prisma/client';
 @injectable()
 export class TaskRepositoryPrisma implements TaskRepository {
     constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
+
     getTaskByUserIdAndTaskId(
         userId: string,
         taskId: string,
@@ -42,16 +43,41 @@ export class TaskRepositoryPrisma implements TaskRepository {
             },
         });
     }
-    getTasksByUserId(userId: string): Promise<TaskEntity[]> {
+
+    getTasksByUserId(
+        userId: string,
+        orderBy: string | undefined,
+        order: string | undefined,
+    ): Promise<TaskEntity[]> {
+        // Defina valores padrão para orderBy e order
+        const validOrderByFields = [
+            'created_at',
+            'due_at',
+            'completed_at',
+            'updated_at',
+            'title',
+        ];
+        const validOrderDirections = ['asc', 'desc'];
+
+        // Validação do orderBy e order
+        const orderByField = validOrderByFields.includes(orderBy || '')
+            ? orderBy
+            : 'created_at';
+        const orderDirection = validOrderDirections.includes(order || '')
+            ? order
+            : 'desc';
+
+        console.log(orderByField, orderDirection);
         return this.prisma.task.findMany({
             where: {
                 user_id: userId,
             },
             orderBy: {
-                created_at: 'desc',
+                [orderByField as string]: orderDirection,
             },
         });
     }
+
     updateTask(task: TaskEntity): Promise<TaskEntity> {
         return this.prisma.task.update({
             where: {

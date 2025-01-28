@@ -3,10 +3,10 @@ import { TaskRepository } from '../domain/interface/TaskRepository';
 import { AppError } from '../../../shared/errors/AppError';
 
 interface GetTasksParams {
-    userId: string; // ID do usuário, obrigatório
-    taskId?: string; // ID da tarefa, opcional
-    orderBy?: 'created_at' | 'due_at' | 'completed_at' | 'updated_at' | 'title'; // Restrição de valores para orderBy
-    order?: 'asc' | 'desc'; // Direção de ordenação, opcional
+    userId: string;
+    taskId?: string;
+    orderBy?: string;
+    order?: string;
 }
 
 @injectable()
@@ -16,7 +16,7 @@ export class GetMyTasks {
     ) {}
     async execute({ userId, taskId, orderBy, order }: GetTasksParams) {
         if (!taskId) {
-            return this.taskRepository.getTasksByUserId(userId);
+            return this.taskRepository.getTasksByUserId(userId, orderBy, order);
         }
 
         const task = await this.taskRepository.getTaskByUserIdAndTaskId(

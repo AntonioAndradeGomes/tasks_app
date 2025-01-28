@@ -2,7 +2,11 @@ import { TaskEntity } from '../entities/TaskEntity';
 
 export interface TaskRepository {
     createTask(task: TaskEntity): Promise<TaskEntity>;
-    getTasksByUserId(userId: string): Promise<TaskEntity[]>;
+    getTasksByUserId(
+        userId: string,
+        orderBy: string | undefined,
+        order: string | undefined,
+    ): Promise<TaskEntity[]>;
     getTaskByUserIdAndTaskId(
         userId: string,
         taskId: string,
