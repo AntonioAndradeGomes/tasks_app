@@ -1,19 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:intl/intl.dart';
-
-extension TaskModelDateFormatter on TaskModel {
-  String? formattedDueAt() {
-    return dueAt != null
-        ? DateFormat("d 'de' MMMM 'de' y", 'pt_BR').format(dueAt!)
-        : null;
-  }
-
-  String? formattedCompletedAt() {
-    return completedAt != null
-        ? DateFormat('dd/MM/yyyy').format(completedAt!)
-        : null;
-  }
-}
 
 // ignore: must_be_immutable
 class TaskModel extends Equatable {

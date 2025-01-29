@@ -71,18 +71,20 @@ class TaskCard extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    Text(
-                      task.title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        decoration:
-                            completed ? TextDecoration.lineThrough : null,
-                        decorationColor: Colors.white,
+                    Expanded(
+                      child: Text(
+                        task.title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          decoration:
+                              completed ? TextDecoration.lineThrough : null,
+                          decorationColor: Colors.white,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

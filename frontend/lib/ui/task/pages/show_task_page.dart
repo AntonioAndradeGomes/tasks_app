@@ -3,6 +3,7 @@ import 'package:frontend/core/config/dependencies_injector.dart';
 import 'package:frontend/ui/task/view_model/show_task_viewmodel.dart';
 import 'package:frontend/ui/task/widgets/task_editable_body_widget.dart';
 import 'package:go_router/go_router.dart';
+import 'package:result_dart/result_dart.dart';
 
 class ShowTaskPage extends StatefulWidget {
   final String? taskId;
@@ -46,16 +47,16 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
           listenable: Listenable.merge(
               [_showTaskViewmodel.loadTask, _showTaskViewmodel.deleteTask]),
           builder: (_, child) {
-            if (_showTaskViewmodel.loadTask.running ||
-                _showTaskViewmodel.deleteTask.running) {
+            if (_showTaskViewmodel.loadTask.isRunning ||
+                _showTaskViewmodel.deleteTask.isRunning) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            if (_showTaskViewmodel.loadTask.error) {
+            if (_showTaskViewmodel.loadTask.isFailure) {
               return Center(
                 child: Text(
-                  _showTaskViewmodel.loadTask.error.toString(),
+                  _showTaskViewmodel.loadTask.toFailure().toString(),
                 ),
               );
             }
@@ -66,7 +67,7 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
             builder: (context, child) {
               return TaskEditableBodyWidget(
                 showTaskViewmodel: _showTaskViewmodel,
-                running: _showTaskViewmodel.saveTask.running,
+                running: _showTaskViewmodel.saveTask.isRunning,
               );
             },
           ),
@@ -76,8 +77,8 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
   }
 
   Future<void> _resultSave() async {
-    if (_showTaskViewmodel.saveTask.completed) {
-      _showTaskViewmodel.saveTask.clearResult();
+    if (_showTaskViewmodel.saveTask.isSuccess) {
+      _showTaskViewmodel.saveTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Task saved'),
@@ -85,8 +86,8 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
         ),
       );
     }
-    if (_showTaskViewmodel.saveTask.error) {
-      _showTaskViewmodel.saveTask.clearResult();
+    if (_showTaskViewmodel.saveTask.isFailure) {
+      _showTaskViewmodel.saveTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Error saving task'),
@@ -97,8 +98,8 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
   }
 
   Future<void> _resultDelete() async {
-    if (_showTaskViewmodel.deleteTask.completed) {
-      _showTaskViewmodel.saveTask.clearResult();
+    if (_showTaskViewmodel.deleteTask.isSuccess) {
+      _showTaskViewmodel.saveTask.reset();
       context.pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -107,8 +108,8 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
         ),
       );
     }
-    if (_showTaskViewmodel.deleteTask.error) {
-      _showTaskViewmodel.saveTask.clearResult();
+    if (_showTaskViewmodel.deleteTask.isFailure) {
+      _showTaskViewmodel.saveTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Error deleted task'),

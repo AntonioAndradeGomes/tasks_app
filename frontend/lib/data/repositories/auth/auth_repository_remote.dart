@@ -1,20 +1,21 @@
 import 'package:frontend/data/repositories/auth/auth_repository.dart';
-import 'package:frontend/data/services/api/auth_api_client.dart';
-import 'package:frontend/data/services/api/model/login_response.dart';
-import 'package:frontend/data/services/shared_preferences_service.dart';
-import 'package:frontend/domain/models/user_model.dart';
-import 'package:frontend/utils/result.dart';
+import 'package:frontend/data/services/auth/auth_client_http.dart';
+import 'package:frontend/data/services/auth/auth_local_storage.dart';
+import 'package:frontend/domain/dtos/credentials.dart';
+import 'package:frontend/domain/dtos/user_registration.dart';
+import 'package:frontend/domain/models/login_response.dart';
 import 'package:logging/logging.dart';
+import 'package:result_dart/result_dart.dart';
 
 class AuthRepositoryRemote extends AuthRepository {
-  final AuthApiClient _apiClient;
-  final SharedPreferencesService _sharedPreferencesService;
+  final AuthClientHttp _authClientHttp;
+  final AuthLocalStorage _authLocalStorage;
 
   AuthRepositoryRemote({
-    required AuthApiClient apiClient,
-    required SharedPreferencesService sharedPreferencesService,
-  })  : _apiClient = apiClient,
-        _sharedPreferencesService = sharedPreferencesService {
+    required AuthClientHttp authClientHttp,
+    required AuthLocalStorage authLocalStorage,
+  })  : _authLocalStorage = authLocalStorage,
+        _authClientHttp = authClientHttp {
     _fetchToken();
   }
 
@@ -23,77 +24,73 @@ class AuthRepositoryRemote extends AuthRepository {
   final _log = Logger('AuthRepositoryRemote');
 
   Future<void> _fetchToken() async {
-    final result = await _sharedPreferencesService.fetchToken();
-    switch (result) {
-      case Ok<String?>():
-        _authToken = result.value;
-        _isAuthenticated = _authToken != null;
-      case Error<String?>():
-        _log.severe(
-          'Failed to fech Token from SharedPreferences',
-          result.error,
-        );
-    }
+    final result = await _authLocalStorage.fetchToken();
+    result.fold(
+      (token) {
+        _authToken = token.isEmpty ? null : token;
+        _isAuthenticated = token.isNotEmpty;
+      },
+      (error) => _log.severe(
+        'Failed to fech Token from SharedPreferences',
+        error,
+      ),
+    );
     notifyListeners();
   }
 
   @override
-  Future<Result<void>> login({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final result = await _apiClient.login(email, password);
-      switch (result) {
-        case Ok<LoginResponse>():
-          _log.finer('Login successful');
-          _isAuthenticated = true;
-          _authToken = result.value.token;
-          await _sharedPreferencesService.saveToken(result.value.token);
-          return const Result.ok(null);
-        case Error<LoginResponse>():
-          _log.warning('Error logging in: ${result.error}');
-          return Result.error(result.error);
-      }
-    } finally {
-      notifyListeners();
-    }
+  AsyncResult<LoginResponse> login(Credentials credentials) async {
+    final result = await _authClientHttp.login(credentials);
+    result.fold(
+      (success) {
+        _log.info('User logged in');
+        _isAuthenticated = true;
+        _authToken = success.token;
+        _authLocalStorage.saveToken(success.token);
+      },
+      (error) {
+        _log.warning('Error logging in: ${error.toString()}');
+      },
+    );
+    notifyListeners();
+    return result;
   }
 
   @override
   bool? get isAuthenticated => _isAuthenticated;
 
   @override
-  Future<Result<void>> logout() async {
+  AsyncResult<Unit> logout() async {
     _log.info('User logged out');
-    try {
-      final result = await _sharedPreferencesService.saveToken(null);
-      if (result is Error<void>) {
-        _log.severe('Error logging out: ${result.error}');
-      }
-      _authToken = null;
-      _isAuthenticated = false;
-      return result;
-    } finally {
-      notifyListeners();
-    }
+    final result = await _authLocalStorage.removeToken();
+    result.fold(
+      (success) {
+        _isAuthenticated = false;
+        _authToken = null;
+      },
+      (error) {
+        _log.severe(
+          'Failed to remove token from SharedPreferences',
+          error,
+        );
+      },
+    );
+    notifyListeners();
+    return result;
   }
 
   @override
-  Future<Result<void>> signup({
-    required String name,
-    required String email,
-    required String password,
-  }) async {
+  AsyncResult<Unit> signup(UserRegistration userRegistration) async {
     _log.info('User singup');
-    final result = await _apiClient.signup(name, email, password);
-    switch (result) {
-      case Ok<UserModel>():
-        _log.finer('Signup successful');
-        return const Result.ok(null);
-      case Error<UserModel>():
-        _log.warning('Error signing up: ${result.error}');
-        return Result.error(result.error);
-    }
+    final result = await _authClientHttp.signup(userRegistration);
+    result.fold(
+      (success) {
+        _log.info('User signed up');
+      },
+      (error) {
+        _log.warning('Error signing up: ${error.toString()}');
+      },
+    );
+    return result;
   }
 }

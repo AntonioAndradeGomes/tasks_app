@@ -1,7 +1,9 @@
 import 'package:frontend/data/repositories/auth/auth_repository.dart';
-import 'package:frontend/utils/command.dart';
-import 'package:frontend/utils/result.dart';
+import 'package:frontend/domain/dtos/user_registration.dart';
+
 import 'package:logging/logging.dart';
+import 'package:result_command/result_command.dart';
+import 'package:result_dart/result_dart.dart';
 
 class SignupViewmodel {
   final AuthRepository _repository;
@@ -11,18 +13,15 @@ class SignupViewmodel {
     required AuthRepository repository,
   }) : _repository = repository {
     _log.fine('SignupViewmodel created');
-    signup =
-        Command1<void, (String name, String email, String password)>(_signup);
+    signup = Command1(_signup);
   }
 
-  late Command1 signup;
+  late Command1<void, UserRegistration> signup;
 
-  Future<Result<void>> _signup((String, String, String) credentials) async {
-    final (name, email, password) = credentials;
-    final result =
-        await _repository.signup(name: name, email: email, password: password);
-    if (result is Error<void>) {
-      _log.warning('Error signing up: ${result.error}');
+  AsyncResult<Unit> _signup(UserRegistration credentials) async {
+    final result = await _repository.signup(credentials);
+    if (result.isError()) {
+      _log.warning('Error signing up: ${result.exceptionOrNull()}');
     }
     return result;
   }

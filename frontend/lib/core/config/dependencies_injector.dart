@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:frontend/data/repositories/auth/auth_repository.dart';
 import 'package:frontend/data/repositories/auth/auth_repository_remote.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository_remote.dart';
-import 'package:frontend/data/services/api/auth_api_client.dart';
-import 'package:frontend/data/services/api/tasks_api_client.dart';
-import 'package:frontend/data/services/shared_preferences_service.dart';
+import 'package:frontend/data/services/auth/auth_client_http.dart';
+import 'package:frontend/data/services/auth/auth_local_storage.dart';
+import 'package:frontend/data/services/client_http.dart';
+import 'package:frontend/data/services/local_storage_service.dart';
+import 'package:frontend/data/services/tasks/task_client_http.dart';
 import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/task_show_use_case.dart';
@@ -18,33 +21,42 @@ import 'package:get_it/get_it.dart';
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
-  getIt.registerSingleton<AuthApiClient>(AuthApiClient());
-  getIt.registerSingleton<SharedPreferencesService>(SharedPreferencesService());
-  getIt.registerSingleton<AuthRepository>(
-    AuthRepositoryRemote(
-      apiClient: getIt(),
-      sharedPreferencesService: getIt(),
+  getIt.registerLazySingleton<Dio>(
+    () => Dio(),
+  );
+
+  getIt.registerLazySingleton<ClientHttp>(
+    () => ClientHttp(
+      dio: getIt(),
     ),
   );
 
-  getIt.registerSingleton<TasksApiClient>(TasksApiClient());
+  getIt.registerLazySingleton<AuthClientHttp>(
+    () => AuthClientHttp(
+      clientHttp: getIt(),
+    ),
+  );
 
-  getIt.registerSingleton<TasksRepository>(
-    TasksRepositoryRemote(
-      apiClient: getIt(),
-      sharedPreferencesService: getIt(),
+  getIt.registerLazySingleton<LocalStorageService>(
+    () => LocalStorageService(),
+  );
+
+  getIt.registerLazySingleton<AuthLocalStorage>(
+    () => AuthLocalStorage(
+      localStorageService: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryRemote(
+      authClientHttp: getIt(),
+      authLocalStorage: getIt(),
     ),
   );
 
   getIt.registerFactory(
     () => LoginViewModel(
       repository: getIt(),
-    ),
-  );
-
-  getIt.registerLazySingleton(
-    () => LogoutViewmodel(
-      authRepository: getIt(),
     ),
   );
 
@@ -55,31 +67,50 @@ Future<void> setupDependencies() async {
   );
 
   getIt.registerLazySingleton(
+    () => LogoutViewmodel(
+      authRepository: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => TaskClientHttp(
+      clientHttp: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton<TasksRepository>(
+    () => TasksRepositoryRemote(
+      taskClientHttp: getIt(),
+      authLocalStorage: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton<CheckOrUncheckTaskUseCase>(
     () => CheckOrUncheckTaskUseCase(
       repository: getIt(),
     ),
   );
 
-  getIt.registerLazySingleton(
+  getIt.registerLazySingleton<HomeViewModel>(
     () => HomeViewModel(
       tasksRepository: getIt(),
       checkOrUncheckTaskUseCase: getIt(),
     ),
   );
 
-  getIt.registerLazySingleton(
-    () => SaveTaskUseCase(
-      repository: getIt(),
-    ),
-  );
-
-  getIt.registerFactory(
+  getIt.registerLazySingleton<TaskShowUseCase>(
     () => TaskShowUseCase(
       repository: getIt(),
     ),
   );
 
-  getIt.registerFactory(
+  getIt.registerLazySingleton<SaveTaskUseCase>(
+    () => SaveTaskUseCase(
+      repository: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<ShowTaskViewmodel>(
     () => ShowTaskViewmodel(
       taskShowUseCase: getIt(),
       saveTaskUseCase: getIt(),

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/core/constants/constants.dart';
 import 'package:frontend/core/errors/custom_exception.dart';
-import 'package:frontend/data/services/api/model/login_response.dart';
+import 'package:frontend/domain/models/login_response.dart';
 import 'package:frontend/domain/models/user_model.dart';
 import 'package:frontend/utils/result.dart';
 //import 'package:logging/logging.dart';

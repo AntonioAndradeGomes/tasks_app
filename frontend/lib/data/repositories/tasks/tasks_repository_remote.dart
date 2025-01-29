@@ -1,143 +1,161 @@
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
-import 'package:frontend/data/services/api/tasks_api_client.dart';
-import 'package:frontend/data/services/shared_preferences_service.dart';
+import 'package:frontend/data/services/auth/auth_local_storage.dart';
+import 'package:frontend/data/services/tasks/task_client_http.dart';
 import 'package:frontend/domain/models/task_model.dart';
-import 'package:frontend/utils/result.dart';
 import 'package:logging/logging.dart';
+import 'package:result_dart/result_dart.dart';
 
 class TasksRepositoryRemote extends TasksRepository {
-  final TasksApiClient _apiClient;
-  final SharedPreferencesService _sharedPreferencesService;
+  final TaskClientHttp _taskClientHttp;
+  final AuthLocalStorage _authLocalStorage;
 
   TasksRepositoryRemote({
-    required TasksApiClient apiClient,
-    required SharedPreferencesService sharedPreferencesService,
-  })  : _apiClient = apiClient,
-        _sharedPreferencesService = sharedPreferencesService;
+    required TaskClientHttp taskClientHttp,
+    required AuthLocalStorage authLocalStorage,
+  })  : _taskClientHttp = taskClientHttp,
+        _authLocalStorage = authLocalStorage;
 
   final _log = Logger('TasksRepositoryRemote');
   List<TaskModel> _tasks = [];
 
   @override
-  Future<Result<TaskModel>> getMyTaskById(String id) async {
-    final token = await _sharedPreferencesService.fetchToken();
-    switch (token) {
-      case Ok<String?>():
-        final result = await _apiClient.getTaskUserTaskById(token.value!, id);
-        switch (result) {
-          case Ok<TaskModel>():
-            return Result.ok(result.value);
-          case Error<TaskModel>():
-            _log.severe('Failed to get tasks', result.error);
-            return Result.error(result.error);
-        }
-      case Error<String?>():
-        _log.severe('Failed to get token', token.error);
-        return Result.error(token.error);
-    }
-  }
-
-  @override
-  Future<Result<TaskModel>> createTask(TaskModel task) async {
-    final token = await _sharedPreferencesService.fetchToken();
-    switch (token) {
-      case Ok<String?>():
-        final result = await _apiClient.createTask(token.value!, task);
-        switch (result) {
-          case Ok<TaskModel>():
-            _log.finer('Successfully created task');
-            _tasks.insert(0, result.value);
-            notifyListeners();
-            return Result.ok(result.value);
-          case Error<TaskModel>():
-            _log.severe('Failed to create task', result.error);
-            return Result.error(result.error);
-        }
-      case Error<String?>():
-        _log.severe('Failed to get token', token.error);
-        return Result.error(token.error);
-    }
-  }
-
-  @override
-  Future<Result<TaskModel>> updateTask(TaskModel task) async {
-    final token = await _sharedPreferencesService.fetchToken();
-    switch (token) {
-      case Ok<String?>():
-        final result = await _apiClient.updateTask(token.value!, task);
-        switch (result) {
-          case Ok<TaskModel>():
-            final index = _tasks.indexWhere((t) => t.id == task.id);
-            if (index != -1) {
-              _tasks[index] = result.value; // Atualiza a tarefa
-            } else {
-              _tasks.insert(0, result.value);
-            }
-            _log.finer('Successfully updated task');
-            notifyListeners(); // Notifica os ouvintes sobre a alteração
-            return Result.ok(result.value);
-          case Error<TaskModel>():
-            _log.severe('Failed to update task', result.error);
-            return Result.error(result.error);
-        }
-      case Error<String?>():
-        _log.severe('Failed to get token', token.error);
-        return Result.error(token.error);
-    }
-  }
-
-  @override
-  Future<Result<List<TaskModel>>> fetchTasks() async {
-    final tokenResult = await _sharedPreferencesService.fetchToken();
-    switch (tokenResult) {
-      case Ok<String?>():
-        final token = tokenResult.value;
-        if (token == null) {
-          _log.severe('Token is null');
-          _tasks.clear();
-          notifyListeners();
-          return Result.error(Exception('Token is null'));
-        }
-        final result = await _apiClient.getTasksUserTasks(token);
-        switch (result) {
-          case Ok<List<TaskModel>>():
-            _tasks = result.value;
-            _log.finer("Successfully fetched tasks");
-          case Error<List<TaskModel>>():
-            _log.severe('Failed to fetch tasks', result.error);
-        }
-        notifyListeners();
-        return result;
-      case Error<String?>():
-        _log.severe('Failed to get token', tokenResult.error);
-        _tasks.clear();
-        notifyListeners();
-        return Result.error(tokenResult.error);
-    }
-  }
-
-  @override
   List<TaskModel> get tasks => _tasks;
 
   @override
-  Future<Result<void>> deleteTask(String id) async {
-    final tokenResult = await _sharedPreferencesService.fetchToken();
-    switch (tokenResult) {
-      case Ok<String?>():
-        final result = await _apiClient.deleteTask(tokenResult.value!, id);
-        switch (result) {
-          case Ok<void>():
-            _tasks.removeWhere((t) => t.id == id);
-            _log.finer('Successfully deleted task');
+  AsyncResult<TaskModel> createTask(TaskModel task) async {
+    final token = await _authLocalStorage.fetchToken();
+    return token.fold(
+      (token) async {
+        final result = await _taskClientHttp.createTask(token, task);
+        return result.fold(
+          (task) {
+            _log.finer('Successfully created task');
+            _tasks.insert(0, task);
             notifyListeners();
-            return const Result.ok(null);
-          case Error<void>():
-            _log.severe('Failed to delete task', result.error);
-            return Result.error(result.error);
-        }
-      case Error<String?>():
-        _log.severe('Failed to get token', tokenResult.error);
-        return Result.error(tokenResult.error);
-    }
+            return Success(task);
+          },
+          (error) {
+            _log.severe('Failed to create task', error);
+            return Failure(error);
+          },
+        );
+      },
+      (error) async {
+        _log.severe('Failed to get token', error);
+        return Failure(error);
+      },
+    );
+  }
+
+  @override
+  AsyncResult<Unit> deleteTask(String id) async {
+    final token = await _authLocalStorage.fetchToken();
+    return token.fold(
+      (token) async {
+        final result = await _taskClientHttp.deleteTask(token, id);
+        return result.fold(
+          (_) {
+            _log.finer('Successfully deleted task');
+            _tasks.removeWhere((task) => task.id == id);
+            notifyListeners();
+            return const Success(unit);
+          },
+          (error) {
+            _log.severe('Failed to delete task', error);
+            return Failure(error);
+          },
+        );
+      },
+      (error) async {
+        _log.severe('Failed to get token', error);
+        return Failure(error);
+      },
+    );
+  }
+
+  @override
+  AsyncResult<List<TaskModel>> fetchTasks() async {
+    final token = await _authLocalStorage.fetchToken();
+    return token.fold(
+      (token) async {
+        _log.finer('Searching for tasks');
+        final result = await _taskClientHttp.getUserTasks(token);
+        return result.fold(
+          (list) {
+            _log.finer('Tasks successfully searched');
+            _tasks = list;
+            notifyListeners();
+            return Success(list);
+          },
+          (error) {
+            _log.severe('Failed to search for tasks', error);
+            _tasks.clear();
+            notifyListeners();
+            return Failure(error);
+          },
+        );
+      },
+      (error) async {
+        _log.severe('Failed to get token', error);
+        _tasks.clear();
+        notifyListeners();
+        return Failure(error);
+      },
+    );
+  }
+
+  @override
+  AsyncResult<TaskModel> getMyTaskById(String id) async {
+    final token = await _authLocalStorage.fetchToken();
+    return token.fold(
+      (token) async {
+        final result = await _taskClientHttp.getUserTaskById(token, id);
+        return result.fold(
+          (task) {
+            _log.finer('Successfully got task');
+            return Success(task);
+          },
+          (error) {
+            _log.severe('Failed to get task', error);
+            return Failure(error);
+          },
+        );
+      },
+      (error) async {
+        _log.severe('Failed to get token', error);
+        return Failure(error);
+      },
+    );
+  }
+
+  @override
+  AsyncResult<TaskModel> updateTask(TaskModel task) async {
+    final token = await _authLocalStorage.fetchToken();
+    return token.fold(
+      (token) async {
+        final result = await _taskClientHttp.updateTask(token, task);
+        return result.fold(
+          (task) {
+            _log.finer('Successfully updated task');
+            final index = _tasks.indexWhere((element) => element.id == task.id);
+            if (index != -1) {
+              _tasks[index] = task;
+            } else {
+              _tasks.insert(0, task);
+            }
+            notifyListeners();
+            return Success(task);
+          },
+          (error) {
+            _log.severe('Failed to update task', error);
+            return Failure(error);
+          },
+        );
+      },
+      (error) {
+        _log.severe('Failed to get token', error);
+        return Failure(error);
+      },
+    );
   }
 }

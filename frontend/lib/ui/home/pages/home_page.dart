@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           ListenableBuilder(
             listenable: _logoutViewModel.logout,
             builder: (_, __) {
-              if (_logoutViewModel.logout.running) {
+              if (_logoutViewModel.logout.isRunning) {
                 return const CircularProgressIndicator();
               }
               return IconButton(
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: ListenableBuilder(
         listenable: _homeViewModel.load,
         builder: (_, child) {
-          if (_homeViewModel.load.completed) {
+          if (_homeViewModel.load.isSuccess) {
             return child!;
           }
           return const SizedBox();
@@ -73,13 +73,30 @@ class _HomePageState extends State<HomePage> {
       body: ListenableBuilder(
         listenable: _homeViewModel.load,
         builder: (_, child) {
-          if (_homeViewModel.load.running) {
+          if (_homeViewModel.load.isRunning) {
             return const TasksShimmerListWidget();
           }
-          if (_homeViewModel.load.error) {
-            return const Center(
-              child: Text(
-                'Error loading tasks',
+          if (_homeViewModel.load.isFailure) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Erro ao carregar as tarefas!',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _homeViewModel.load.execute,
+                    child: const Text(
+                      'Tente novamente',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                ],
               ),
             );
           }
@@ -92,7 +109,10 @@ class _HomePageState extends State<HomePage> {
             if (items.isEmpty) {
               return const Center(
                 child: Text(
-                  'No tasks',
+                  'Sem tarefas!',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
                 ),
               );
             }
@@ -114,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () => _homeViewModel.updateTask.execute(task),
                       confirmDismiss: (direction) async {
                         await _homeViewModel.deleteTask.execute(task.id!);
-                        if (_homeViewModel.deleteTask.completed) {
+                        if (_homeViewModel.deleteTask.isSuccess) {
                           return true;
                         }
                         return false;
@@ -177,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                                             await _homeViewModel.deleteTask
                                                 .execute(task.id!);
                                             if (_homeViewModel
-                                                .deleteTask.completed) {
+                                                .deleteTask.isSuccess) {
                                               return true;
                                             }
                                             return false;
@@ -188,23 +208,8 @@ class _HomePageState extends State<HomePage> {
                                 )
                               : const SizedBox.shrink(),
                         ),
-                        /*..._homeViewModel.completedTasks.map(
-                              (task) => TaskCard(
-                                task: task,
-                                onPressed: () =>
-                                    _homeViewModel.updateTask.execute(task),
-                                confirmDismiss: (direction) async {
-                                  await _homeViewModel.deleteTask
-                                      .execute(task.id!);
-                                  if (_homeViewModel.deleteTask.completed) {
-                                    return true;
-                                  }
-                                  return false;
-                                },
-                              ),
-                            ),*/
                       ],
-                    )
+                    ),
                 ],
               ),
             );
@@ -215,8 +220,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _resultLogout() async {
-    if (_logoutViewModel.logout.error) {
-      _logoutViewModel.logout.clearResult();
+    if (_logoutViewModel.logout.isFailure) {
+      _logoutViewModel.logout.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Logout failed'),
@@ -227,8 +232,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _resultDelete() async {
-    if (_homeViewModel.deleteTask.completed) {
-      _logoutViewModel.logout.clearResult();
+    if (_homeViewModel.deleteTask.isSuccess) {
+      _homeViewModel.deleteTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Task Deleted'),
@@ -237,8 +242,8 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    if (_homeViewModel.deleteTask.error) {
-      _homeViewModel.deleteTask.clearResult();
+    if (_homeViewModel.deleteTask.isFailure) {
+      _homeViewModel.deleteTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Error deleting task'),

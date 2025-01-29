@@ -20,4 +20,6 @@ abstract class Constants {
     "#BDB76B",
     "#8B4512",
   ];
+
+  static const String localStorageTokenKey = 'TOKEN';
 }

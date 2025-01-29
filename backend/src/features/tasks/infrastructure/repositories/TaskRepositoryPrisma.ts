@@ -66,8 +66,6 @@ export class TaskRepositoryPrisma implements TaskRepository {
         const orderDirection = validOrderDirections.includes(order || '')
             ? order
             : 'desc';
-
-        console.log(orderByField, orderDirection);
         return this.prisma.task.findMany({
             where: {
                 user_id: userId,

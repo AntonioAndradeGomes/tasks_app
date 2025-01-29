@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/config/dependencies_injector.dart';
+import 'package:frontend/domain/dtos/credentials.dart';
+import 'package:frontend/domain/validators/credentials_validator.dart';
 import 'package:frontend/routing/routes.dart';
 import 'package:frontend/ui/auth/login/view_models/login_view_model.dart';
 import 'package:frontend/ui/auth/login/widgets/password_text_form_field_widget.dart';
@@ -17,6 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late LoginViewModel _viewModel;
+
+  final _validator = CredentialsValidator();
+  final _credentials = Credentials();
 
   @override
   void initState() {
@@ -76,44 +81,32 @@ class _LoginPageState extends State<LoginPage> {
                       return Column(
                         children: [
                           TextFormField(
-                            readOnly: _viewModel.login.running,
+                            readOnly: _viewModel.login.isRunning,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: _emailController,
                             decoration: const InputDecoration(
                               hintText: 'E-mail',
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Insira seu e-mail';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Insira um e-mail valido';
-                              }
-                              return null;
-                            },
+                            onChanged: _credentials.setEmail,
+                            validator:
+                                _validator.byField(_credentials, 'email'),
                           ),
                           const SizedBox(
                             height: 15,
                           ),
                           PasswordTextFormFieldWidget(
                             passwordController: _passwordController,
-                            readOnly: _viewModel.login.running,
+                            readOnly: _viewModel.login.isRunning,
+                            onChanged: _credentials.setPassword,
                             hintText: 'Password',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Insira uma senha';
-                              }
-                              if (value.length < 6 || value.contains(' ')) {
-                                return 'Insira uma senha valida';
-                              }
-                              return null;
-                            },
+                            validator:
+                                _validator.byField(_credentials, 'password'),
                           ),
                           const SizedBox(
                             height: 20,
                           ),
-                          if (_viewModel.login.running)
+                          if (_viewModel.login.isRunning)
                             const CircularProgressIndicator()
                           else
                             ElevatedButton(
@@ -121,24 +114,18 @@ class _LoginPageState extends State<LoginPage> {
                                 if (_formKey.currentState!.validate()) {
                                   FocusScope.of(context)
                                       .requestFocus(FocusNode());
-                                  _viewModel.login.execute(
-                                    (
-                                      _emailController.text,
-                                      _passwordController.text
-                                    ),
-                                  );
+                                  _viewModel.login.execute(_credentials);
                                 }
                               },
                               child: const Text(
                                 'Entrar',
-                                // style: TextStyle(color: Colors.white),
                               ),
                             ),
                           const SizedBox(
                             height: 20,
                           ),
                           GestureDetector(
-                            onTap: _viewModel.login.running
+                            onTap: _viewModel.login.isRunning
                                 ? null
                                 : () {
                                     FocusScope.of(context)
@@ -177,8 +164,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _result() async {
-    if (_viewModel.login.error) {
-      _viewModel.login.clearResult();
+    if (_viewModel.login.isFailure) {
+      _viewModel.login.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Email ou senha incorretos'),

@@ -3,9 +3,9 @@ import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/domain/models/task_model.dart';
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/task_show_use_case.dart';
-import 'package:frontend/utils/command.dart';
-import 'package:frontend/utils/result.dart';
 import 'package:logging/logging.dart';
+import 'package:result_command/result_command.dart';
+import 'package:result_dart/result_dart.dart';
 
 class ShowTaskViewmodel extends ChangeNotifier {
   final _log = Logger('ShowTaskViewmodel');
@@ -21,9 +21,9 @@ class ShowTaskViewmodel extends ChangeNotifier {
         _saveTaskUseCase = saveTaskUseCase,
         _tasksRepository = tasksRepository {
     _log.finest('HomeViewModel created');
-    loadTask = Command1<void, String?>(_load);
-    saveTask = Command0<TaskModel>(_save);
-    deleteTask = Command0<void>(_delete);
+    loadTask = Command1(_load);
+    saveTask = Command0(_save);
+    deleteTask = Command0(_delete);
   }
   //essa task só vai servir para comparar com _editableTask
   TaskModel? _task;
@@ -36,44 +36,52 @@ class ShowTaskViewmodel extends ChangeNotifier {
 
   late final Command1<void, String?> loadTask;
   late final Command0<TaskModel> saveTask;
-  late final Command0<void> deleteTask;
+  late final Command0<Unit> deleteTask;
 
-  Future<Result<void>> _load(String? id) async {
+  AsyncResult<TaskModel> _load(String? id) async {
     final result = await _taskShowUseCase.call(id);
-    switch (result) {
-      case Ok<TaskModel>():
+    result.fold(
+      (task) {
         _log.finest('Task loaded');
-        _task = result.value;
-        _editableTask = result.value.copyWith();
+        _task = task;
+        _editableTask = task.copyWith();
         notifyListeners();
-      case Error<TaskModel>():
-        _log.warning('Error loading task: ${result.error}');
-    }
+      },
+      (error) {
+        _log.warning('Error loading task: $error');
+      },
+    );
+
     return result;
   }
 
-  Future<Result<TaskModel>> _save() async {
+  AsyncResult<TaskModel> _save() async {
     final result = await _saveTaskUseCase.call(_editableTask!);
-    switch (result) {
-      case Ok<TaskModel>():
+    result.fold(
+      (task) {
         _log.finest('Task saved');
-        _task = result.value;
-        _editableTask = result.value.copyWith();
+        _task = task;
+        _editableTask = task.copyWith();
         notifyListeners();
-      case Error<TaskModel>():
-        _log.warning('Error saving task: ${result.error}');
-    }
+      },
+      (error) {
+        _log.warning('Error saving task: $error');
+      },
+    );
+
     return result;
   }
 
-  Future<Result<void>> _delete() async {
+  AsyncResult<Unit> _delete() async {
     final result = await _tasksRepository.deleteTask(_editableTask!.id!);
-    switch (result) {
-      case Ok<void>():
+    result.fold(
+      (unit) {
         _log.finest('Task deleted');
-      case Error<void>():
-        _log.warning('Error deleting task: ${result.error}');
-    }
+      },
+      (error) {
+        _log.warning('Error deleting task: $error');
+      },
+    );
     return result;
   }
 

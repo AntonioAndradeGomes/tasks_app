@@ -4,6 +4,7 @@ class PasswordTextFormFieldWidget extends StatefulWidget {
   final TextEditingController passwordController;
   final bool readOnly;
   final String hintText;
+  final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
 
   const PasswordTextFormFieldWidget({
@@ -12,6 +13,7 @@ class PasswordTextFormFieldWidget extends StatefulWidget {
     required this.readOnly,
     required this.hintText,
     this.validator,
+    this.onChanged,
   });
 
   @override
@@ -33,6 +35,7 @@ class _PasswordTextFormFieldWidgetState
   Widget build(BuildContext context) {
     return TextFormField(
       readOnly: widget.readOnly,
+      onChanged: widget.onChanged,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       controller: widget.passwordController,
       obscureText: _obscureText,

@@ -1,7 +1,7 @@
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/domain/models/task_model.dart';
-import 'package:frontend/utils/result.dart';
 import 'package:logging/logging.dart';
+import 'package:result_dart/result_dart.dart';
 
 class TaskShowUseCase {
   final _log = Logger('TaskShowUseCase');
@@ -11,10 +11,10 @@ class TaskShowUseCase {
     required TasksRepository repository,
   }) : _repository = repository;
 
-  Future<Result<TaskModel>> call(String? id) async {
+  AsyncResult<TaskModel> call(String? id) async {
     if (id == null) {
       _log.fine('Task id is null');
-      return Result.ok(
+      return Success(
         TaskModel(
           title: '',
         ),

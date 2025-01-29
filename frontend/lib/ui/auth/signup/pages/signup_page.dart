@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/config/dependencies_injector.dart';
+import 'package:frontend/domain/dtos/user_registration.dart';
+import 'package:frontend/domain/validators/user_registration_validator.dart';
 import 'package:frontend/ui/auth/login/widgets/password_text_form_field_widget.dart';
 import 'package:frontend/ui/auth/signup/view_model/signup_viewmodel.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +18,9 @@ class _SignupPageState extends State<SignupPage> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final _userRegistration = UserRegistration();
+  final _userRegistrationValidator = UserRegistrationValidator();
 
   late SignupViewmodel _viewModel;
 
@@ -81,19 +86,15 @@ class _SignupPageState extends State<SignupPage> {
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: _nameController,
-                            readOnly: _viewModel.signup.running,
+                            onChanged: _userRegistration.setName,
+                            readOnly: _viewModel.signup.isRunning,
                             decoration: const InputDecoration(
                               hintText: 'Nome',
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Insira seu nome';
-                              }
-                              if (value.length < 3) {
-                                return 'Insira um nome valido';
-                              }
-                              return null;
-                            },
+                            validator: _userRegistrationValidator.byField(
+                              _userRegistration,
+                              'name',
+                            ),
                           ),
                           const SizedBox(
                             height: 15,
@@ -102,41 +103,33 @@ class _SignupPageState extends State<SignupPage> {
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: _emailController,
-                            readOnly: _viewModel.signup.running,
+                            readOnly: _viewModel.signup.isRunning,
+                            onChanged: _userRegistration.setEmail,
                             decoration: const InputDecoration(
                               hintText: 'E-mail',
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Insira seu e-mail';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Insira um e-mail valido';
-                              }
-                              return null;
-                            },
+                            validator: _userRegistrationValidator.byField(
+                              _userRegistration,
+                              'email',
+                            ),
                           ),
                           const SizedBox(
                             height: 15,
                           ),
                           PasswordTextFormFieldWidget(
                             passwordController: _passwordController,
-                            readOnly: _viewModel.signup.running,
+                            readOnly: _viewModel.signup.isRunning,
                             hintText: 'Password',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Insira uma senha';
-                              }
-                              if (value.length < 6 || value.contains(' ')) {
-                                return 'Insira uma senha valida';
-                              }
-                              return null;
-                            },
+                            onChanged: _userRegistration.setPassword,
+                            validator: _userRegistrationValidator.byField(
+                              _userRegistration,
+                              'password',
+                            ),
                           ),
                           const SizedBox(
                             height: 20,
                           ),
-                          if (_viewModel.signup.running)
+                          if (_viewModel.signup.isRunning)
                             const CircularProgressIndicator()
                           else
                             ElevatedButton(
@@ -144,13 +137,7 @@ class _SignupPageState extends State<SignupPage> {
                                 if (_formKey.currentState!.validate()) {
                                   FocusScope.of(context)
                                       .requestFocus(FocusNode());
-                                  _viewModel.signup.execute(
-                                    (
-                                      _nameController.text,
-                                      _emailController.text,
-                                      _passwordController.text
-                                    ),
-                                  );
+                                  _viewModel.signup.execute(_userRegistration);
                                 }
                               },
                               child: const Text(
@@ -161,8 +148,9 @@ class _SignupPageState extends State<SignupPage> {
                             height: 20,
                           ),
                           GestureDetector(
-                            onTap:
-                                _viewModel.signup.running ? null : context.pop,
+                            onTap: _viewModel.signup.isRunning
+                                ? null
+                                : context.pop,
                             child: RichText(
                               text: TextSpan(
                                 text: 'Já possui uma conta?',
@@ -192,21 +180,21 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _result() async {
-    if (_viewModel.signup.completed) {
-      _viewModel.signup.clearResult();
+    if (_viewModel.signup.isSuccess) {
+      _viewModel.signup.reset();
       context.pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Signup successful'),
+          content: Text('Cadastro realizado com sucesso!'),
           backgroundColor: Colors.green,
         ),
       );
     }
-    if (_viewModel.signup.error) {
-      _viewModel.signup.clearResult();
+    if (_viewModel.signup.isFailure) {
+      _viewModel.signup.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Signup failed'),
+          content: Text('Falha no cadastro'),
           backgroundColor: Colors.red,
         ),
       );
