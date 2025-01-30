@@ -1,18 +1,17 @@
 import 'package:equatable/equatable.dart';
 
-// ignore: must_be_immutable
 class TaskModel extends Equatable {
   final String? id;
-  String title;
-  String? description;
-  String? hexColor;
+  final String title;
+  final String? description;
+  final String? hexColor;
   final String? userId;
-  DateTime? dueAt;
-  DateTime? completedAt;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final DateTime? dueAt;
+  final DateTime? completedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  TaskModel({
+  const TaskModel({
     this.id,
     required this.title,
     this.description,
@@ -20,43 +19,9 @@ class TaskModel extends Equatable {
     this.userId,
     this.dueAt,
     this.completedAt,
-    this.createdAt,
-    this.updatedAt,
+    required this.createdAt,
+    required this.updatedAt,
   });
-
-  TaskModel copyWith({
-    String? id,
-    String? title,
-    String? description,
-    String? hexColor,
-    String? userId,
-    DateTime? dueAt,
-    DateTime? completedAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return TaskModel(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      hexColor: hexColor ?? this.hexColor,
-      userId: userId ?? this.userId,
-      dueAt: dueAt ?? this.dueAt,
-      completedAt: completedAt ?? this.completedAt,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'title': title,
-      'description': description,
-      'hexColor': hexColor?.toUpperCase(),
-      'due_at': dueAt?.toIso8601String(),
-      'completed_at': completedAt?.toIso8601String(),
-    };
-  }
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
@@ -74,10 +39,10 @@ class TaskModel extends Equatable {
           : null,
       createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'] as String)
-          : null,
+          : DateTime.now(),
       updatedAt: map['updated_at'] != null
           ? DateTime.parse(map['updated_at'] as String)
-          : null,
+          : DateTime.now(),
     );
   }
 

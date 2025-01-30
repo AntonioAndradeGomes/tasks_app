@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
+import 'package:frontend/domain/dtos/task_dto.dart';
 import 'package:frontend/domain/models/task_model.dart';
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/task_show_use_case.dart';
@@ -27,12 +28,12 @@ class ShowTaskViewmodel extends ChangeNotifier {
   }
   //essa task só vai servir para comparar com _editableTask
   TaskModel? _task;
+  //dto que será editado
+  TaskDto? _editableTask;
 
-  TaskModel? _editableTask;
-
-  TaskModel? get task => _editableTask;
-
-  bool get taskWasEdited => _task != _editableTask;
+  TaskDto? get task => _editableTask;
+  //comparação do dto com a tarefa
+  bool get taskWasEdited => !_editableTask!.equalsModel(_task!);
 
   late final Command1<void, String?> loadTask;
   late final Command0<TaskModel> saveTask;
@@ -44,7 +45,7 @@ class ShowTaskViewmodel extends ChangeNotifier {
       (task) {
         _log.finest('Task loaded');
         _task = task;
-        _editableTask = task.copyWith();
+        _editableTask = TaskDto.fromModel(task);
         notifyListeners();
       },
       (error) {
@@ -61,7 +62,7 @@ class ShowTaskViewmodel extends ChangeNotifier {
       (task) {
         _log.finest('Task saved');
         _task = task;
-        _editableTask = task.copyWith();
+        _editableTask = TaskDto.fromModel(task);
         notifyListeners();
       },
       (error) {
@@ -85,24 +86,32 @@ class ShowTaskViewmodel extends ChangeNotifier {
     return result;
   }
 
-  //para os casos de alteração no título e na descrição
-  void updateTask(TaskModel task) {
-    _editableTask = task;
+  //edições nos campos de titulo e descrição
+  void setTitle(String title) {
+    _editableTask?.setTitle(title);
     notifyListeners();
   }
 
-  //para quando se alterar a data de conclusão
-  void updateDueDate(DateTime? dueDate) {
-    _editableTask!.dueAt = dueDate;
+  void setDescription(String description) {
+    _editableTask?.setDescription(description);
     notifyListeners();
   }
 
-  //check no botão de completar a tarefa
-  void completeTask() {
-    if (_editableTask!.completedAt == null) {
-      _editableTask!.completedAt = DateTime.now();
+  void setHexColor(String hexColor) {
+    _editableTask?.setHexColor(hexColor);
+    notifyListeners();
+  }
+
+  void setDueAt(DateTime? dueAt) {
+    _editableTask?.setDueAt(dueAt);
+    notifyListeners();
+  }
+
+  void setCompletedAt() {
+    if (_editableTask?.completedAt != null) {
+      _editableTask?.setCompletedAt(null);
     } else {
-      _editableTask!.completedAt = null;
+      _editableTask?.setCompletedAt(DateTime.now());
     }
     notifyListeners();
   }

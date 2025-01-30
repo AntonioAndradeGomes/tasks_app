@@ -20,6 +20,7 @@ class AuthRepositoryRemote extends AuthRepository {
   }
 
   bool? _isAuthenticated;
+  // ignore: unused_field
   String? _authToken;
   final _log = Logger('AuthRepositoryRemote');
 
@@ -43,7 +44,7 @@ class AuthRepositoryRemote extends AuthRepository {
     final result = await _authClientHttp.login(credentials);
     result.fold(
       (success) {
-        _log.info('User logged in');
+        _log.info('User logged in successfully');
         _isAuthenticated = true;
         _authToken = success.token;
         _authLocalStorage.saveToken(success.token);
@@ -61,10 +62,11 @@ class AuthRepositoryRemote extends AuthRepository {
 
   @override
   AsyncResult<Unit> logout() async {
-    _log.info('User logged out');
+    _log.info('User logged out repository');
     final result = await _authLocalStorage.removeToken();
     result.fold(
       (success) {
+        _log.info('User logged out successfully');
         _isAuthenticated = false;
         _authToken = null;
       },
@@ -81,11 +83,11 @@ class AuthRepositoryRemote extends AuthRepository {
 
   @override
   AsyncResult<Unit> signup(UserRegistration userRegistration) async {
-    _log.info('User singup');
+    _log.info('User singup repository');
     final result = await _authClientHttp.signup(userRegistration);
     result.fold(
       (success) {
-        _log.info('User signed up');
+        _log.info('User signed up successfully');
       },
       (error) {
         _log.warning('Error signing up: ${error.toString()}');

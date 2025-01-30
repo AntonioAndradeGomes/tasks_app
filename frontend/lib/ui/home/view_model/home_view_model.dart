@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
+import 'package:frontend/domain/dtos/task_dto.dart';
 import 'package:frontend/domain/models/task_model.dart';
 import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dart';
 import 'package:logging/logging.dart';
@@ -49,7 +50,8 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   AsyncResult<TaskModel> _updateTask(TaskModel task) async {
-    return _checkOrUncheckTaskUseCase.call(task);
+    final taskDto = TaskDto.fromModel(task);
+    return await _checkOrUncheckTaskUseCase(taskDto);
   }
 
   AsyncResult<Unit> _deleteTask(String id) async {

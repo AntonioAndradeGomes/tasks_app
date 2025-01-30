@@ -17,6 +17,8 @@ class TaskShowUseCase {
       return Success(
         TaskModel(
           title: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         ),
       );
     }

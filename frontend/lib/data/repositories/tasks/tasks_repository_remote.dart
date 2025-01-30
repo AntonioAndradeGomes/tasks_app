@@ -1,6 +1,7 @@
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/data/services/auth/auth_local_storage.dart';
 import 'package:frontend/data/services/tasks/task_client_http.dart';
+import 'package:frontend/domain/dtos/task_dto.dart';
 import 'package:frontend/domain/models/task_model.dart';
 import 'package:logging/logging.dart';
 import 'package:result_dart/result_dart.dart';
@@ -22,7 +23,7 @@ class TasksRepositoryRemote extends TasksRepository {
   List<TaskModel> get tasks => _tasks;
 
   @override
-  AsyncResult<TaskModel> createTask(TaskModel task) async {
+  AsyncResult<TaskModel> createTask(TaskDto task) async {
     final token = await _authLocalStorage.fetchToken();
     return token.fold(
       (token) async {
@@ -129,7 +130,7 @@ class TasksRepositoryRemote extends TasksRepository {
   }
 
   @override
-  AsyncResult<TaskModel> updateTask(TaskModel task) async {
+  AsyncResult<TaskModel> updateTask(TaskDto task) async {
     final token = await _authLocalStorage.fetchToken();
     return token.fold(
       (token) async {

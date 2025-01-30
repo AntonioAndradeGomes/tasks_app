@@ -49,7 +49,7 @@ class TaskEditableBodyWidget extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed:
-                          running ? null : showTaskViewmodel.completeTask,
+                          running ? null : showTaskViewmodel.setCompletedAt,
                       iconSize: 35,
                       padding: EdgeInsets.zero,
                       icon: Icon(
@@ -73,13 +73,7 @@ class TaskEditableBodyWidget extends StatelessWidget {
                           }
                           return null;
                         },
-                        onChanged: (value) {
-                          showTaskViewmodel.updateTask(
-                            task.copyWith(
-                              title: value,
-                            ),
-                          );
-                        },
+                        onChanged: showTaskViewmodel.setTitle,
                       ),
                     ),
                     if (task.id != null)
@@ -100,13 +94,7 @@ class TaskEditableBodyWidget extends StatelessWidget {
                     hintText: 'Descrição',
                     focusedBorder: focusBorder,
                   ),
-                  onChanged: (value) {
-                    showTaskViewmodel.updateTask(
-                      task.copyWith(
-                        description: value,
-                      ),
-                    );
-                  },
+                  onChanged: showTaskViewmodel.setDescription,
                   maxLines: 4,
                   initialValue: showTaskViewmodel.task!.description,
                 ),
@@ -114,20 +102,12 @@ class TaskEditableBodyWidget extends StatelessWidget {
                   disabled: running,
                   selectedColor: color,
                   dueAt: task.dueAt,
-                  onChanged: (date) {
-                    showTaskViewmodel.updateDueDate(date);
-                  },
+                  onChanged: showTaskViewmodel.setDueAt,
                 ),
                 SelectColorWidget(
                   selectColor: task.hexColor,
                   disabled: running,
-                  onChanged: (color) {
-                    showTaskViewmodel.updateTask(
-                      task.copyWith(
-                        hexColor: color,
-                      ),
-                    );
-                  },
+                  onChanged: showTaskViewmodel.setHexColor,
                 ),
                 if (showTaskViewmodel.taskWasEdited)
                   running

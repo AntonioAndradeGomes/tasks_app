@@ -1,5 +1,6 @@
 import 'package:frontend/core/constants/constants.dart';
 import 'package:frontend/data/services/client_http.dart';
+import 'package:frontend/domain/dtos/task_dto.dart';
 import 'package:frontend/domain/models/task_model.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -44,28 +45,28 @@ class TaskClientHttp {
 
   AsyncResult<TaskModel> createTask(
     String token,
-    TaskModel task,
+    TaskDto taskDto,
   ) async {
     final response = await _clientHttp.post(
       _baseUrl,
       headers: {
         'x-auth-token': token,
       },
-      data: task.toMap(),
+      data: taskDto.toMap(),
     );
     return response.map((response) => TaskModel.fromMap(response.data));
   }
 
   AsyncResult<TaskModel> updateTask(
     String token,
-    TaskModel task,
+    TaskDto taskDto,
   ) async {
     final response = await _clientHttp.put(
-      '$_baseUrl/${task.id}',
+      '$_baseUrl/${taskDto.id}',
       headers: {
         'x-auth-token': token,
       },
-      data: task.toMap(),
+      data: taskDto.toMap(),
     );
     return response.map((response) => TaskModel.fromMap(response.data));
   }
