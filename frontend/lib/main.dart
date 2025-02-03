@@ -5,6 +5,7 @@ import 'package:frontend/core/theme/app_theme.dart';
 import 'package:frontend/data/repositories/auth/auth_repository.dart';
 import 'package:frontend/routing/app_routes.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,11 +37,13 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
+        Locale('en', 'US'), // Inglês
         Locale('pt', 'BR'),
       ],
     );

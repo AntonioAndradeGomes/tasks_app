@@ -6,7 +6,8 @@ class HttpException extends AppException {
   final List<String>? errors;
 
   HttpException(
-    super.message, {
+    super.message,
+    super.stackTrace, {
     this.statusCode,
     this.status,
     this.errors,

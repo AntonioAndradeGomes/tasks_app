@@ -60,6 +60,9 @@ abstract class AppTheme {
         ),
       ),
     ),
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+    ),
     useMaterial3: true,
   );
 
@@ -70,6 +73,10 @@ abstract class AppTheme {
       seedColor: Colors.blue,
       brightness: Brightness.dark,
     ),
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+    ),
+
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: Colors.blue,
       elevation: 0,

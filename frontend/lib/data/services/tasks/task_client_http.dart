@@ -14,12 +14,10 @@ class TaskClientHttp {
   })  : _clientHttp = clientHttp,
         _baseUrl = baseUrl ?? '${Constants.backendUrl}/tasks';
 
-  AsyncResult<List<TaskModel>> getUserTasks(String token) async {
+  AsyncResult<List<TaskModel>> getUserTasks() async {
     final response = await _clientHttp.get(
       _baseUrl,
-      headers: {
-        'x-auth-token': token,
-      },
+      requiresAuth: true,
     );
 
     return response.map((response) => (response.data as List)
@@ -28,14 +26,11 @@ class TaskClientHttp {
   }
 
   AsyncResult<TaskModel> getUserTaskById(
-    String token,
     String taskId,
   ) async {
     final response = await _clientHttp.get(
       _baseUrl,
-      headers: {
-        'x-auth-token': token,
-      },
+      requiresAuth: true,
       queryParameters: {
         'taskId': taskId,
       },
@@ -44,39 +39,31 @@ class TaskClientHttp {
   }
 
   AsyncResult<TaskModel> createTask(
-    String token,
     TaskDto taskDto,
   ) async {
     final response = await _clientHttp.post(
       _baseUrl,
-      headers: {
-        'x-auth-token': token,
-      },
+      requiresAuth: true,
       data: taskDto.toMap(),
     );
     return response.map((response) => TaskModel.fromMap(response.data));
   }
 
   AsyncResult<TaskModel> updateTask(
-    String token,
     TaskDto taskDto,
   ) async {
     final response = await _clientHttp.put(
       '$_baseUrl/${taskDto.id}',
-      headers: {
-        'x-auth-token': token,
-      },
+      requiresAuth: true,
       data: taskDto.toMap(),
     );
     return response.map((response) => TaskModel.fromMap(response.data));
   }
 
-  AsyncResult<Unit> deleteTask(String token, String taskId) async {
+  AsyncResult<Unit> deleteTask(String taskId) async {
     final response = await _clientHttp.delete(
       '$_baseUrl/$taskId',
-      headers: {
-        'x-auth-token': token,
-      },
+      requiresAuth: true,
     );
     return response.map((response) => unit);
   }

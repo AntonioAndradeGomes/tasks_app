@@ -5,6 +5,7 @@ import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository_remote.dart';
 import 'package:frontend/data/services/auth/auth_client_http.dart';
 import 'package:frontend/data/services/auth/auth_local_storage.dart';
+import 'package:frontend/data/services/auth/interceptor/auth_interceptor.dart';
 import 'package:frontend/data/services/client_http.dart';
 import 'package:frontend/data/services/local_storage_service.dart';
 import 'package:frontend/data/services/tasks/task_client_http.dart';
@@ -12,7 +13,7 @@ import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dar
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/task_show_use_case.dart';
 import 'package:frontend/ui/auth/login/view_models/login_view_model.dart';
-import 'package:frontend/ui/auth/logout/logout_viewmodel.dart';
+import 'package:frontend/ui/auth/logout/view_model/logout_viewmodel.dart';
 import 'package:frontend/ui/auth/signup/view_model/signup_viewmodel.dart';
 import 'package:frontend/ui/home/view_model/home_view_model.dart';
 import 'package:frontend/ui/task/view_model/show_task_viewmodel.dart';
@@ -25,9 +26,16 @@ Future<void> setupDependencies() async {
     () => Dio(),
   );
 
+  getIt.registerLazySingleton<AuthInterceptor>(
+    () => AuthInterceptor(
+      authLocalStorage: getIt(),
+    ),
+  );
+
   getIt.registerLazySingleton<ClientHttp>(
     () => ClientHttp(
       dio: getIt(),
+      authInterceptor: getIt(),
     ),
   );
 
@@ -81,7 +89,6 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<TasksRepository>(
     () => TasksRepositoryRemote(
       taskClientHttp: getIt(),
-      authLocalStorage: getIt(),
     ),
   );
 
@@ -91,7 +98,7 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  getIt.registerLazySingleton<HomeViewModel>(
+  getIt.registerFactory<HomeViewModel>(
     () => HomeViewModel(
       tasksRepository: getIt(),
       checkOrUncheckTaskUseCase: getIt(),

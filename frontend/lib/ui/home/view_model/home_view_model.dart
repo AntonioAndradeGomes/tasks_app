@@ -41,9 +41,9 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  late Command0 load;
-  late final Command1<void, TaskModel> updateTask;
-  late final Command1<void, String> deleteTask;
+  late Command0<List<TaskModel>> load;
+  late final Command1<TaskModel, TaskModel> updateTask;
+  late final Command1<Unit, String> deleteTask;
 
   AsyncResult<List<TaskModel>> _load() {
     return _tasksRepository.fetchTasks();

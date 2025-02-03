@@ -5,6 +5,7 @@ import 'package:frontend/domain/validators/user_registration_validator.dart';
 import 'package:frontend/ui/auth/login/widgets/password_text_form_field_widget.dart';
 import 'package:frontend/ui/auth/signup/view_model/signup_viewmodel.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -58,119 +59,154 @@ class _SignupPageState extends State<SignupPage> {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Scaffold(
-        body: Center(
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Cadastre-se.',
-                    style: TextStyle(
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ListenableBuilder(
-                    listenable: _viewModel.signup,
-                    builder: (context, child) {
-                      return Column(
-                        children: [
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: _nameController,
-                            onChanged: _userRegistration.setName,
-                            readOnly: _viewModel.signup.isRunning,
-                            decoration: const InputDecoration(
-                              hintText: 'Nome',
-                            ),
-                            validator: _userRegistrationValidator.byField(
-                              _userRegistration,
-                              'name',
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: _emailController,
-                            readOnly: _viewModel.signup.isRunning,
-                            onChanged: _userRegistration.setEmail,
-                            decoration: const InputDecoration(
-                              hintText: 'E-mail',
-                            ),
-                            validator: _userRegistrationValidator.byField(
-                              _userRegistration,
-                              'email',
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          PasswordTextFormFieldWidget(
-                            passwordController: _passwordController,
-                            readOnly: _viewModel.signup.isRunning,
-                            hintText: 'Password',
-                            onChanged: _userRegistration.setPassword,
-                            validator: _userRegistrationValidator.byField(
-                              _userRegistration,
-                              'password',
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          if (_viewModel.signup.isRunning)
-                            const CircularProgressIndicator()
-                          else
-                            ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  _viewModel.signup.execute(_userRegistration);
-                                }
-                              },
-                              child: const Text(
-                                'Cadastrar',
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 600,
+              ), // Limita a largura máxima
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.signup,
+                        style: const TextStyle(
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      ListenableBuilder(
+                        listenable: _viewModel.signup,
+                        builder: (context, child) {
+                          return Column(
+                            children: [
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                controller: _nameController,
+                                onChanged: _userRegistration.setName,
+                                readOnly: _viewModel.signup.isRunning,
+                                decoration: InputDecoration(
+                                  hintText: AppLocalizations.of(context)!.name,
+                                ),
+                                validator: (name) {
+                                  if (name == null || name.isEmpty) {
+                                    return AppLocalizations.of(context)!
+                                        .field_required;
+                                  }
+                                  if (name.length < 3) {
+                                    return AppLocalizations.of(context)!
+                                        .name_min;
+                                  }
+                                  return null;
+                                },
                               ),
-                            ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          GestureDetector(
-                            onTap: _viewModel.signup.isRunning
-                                ? null
-                                : context.pop,
-                            child: RichText(
-                              text: TextSpan(
-                                text: 'Já possui uma conta?',
-                                style: Theme.of(context).textTheme.titleMedium,
-                                children: const [
-                                  TextSpan(
-                                    text: ' Entre',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                controller: _emailController,
+                                readOnly: _viewModel.signup.isRunning,
+                                onChanged: _userRegistration.setEmail,
+                                decoration: InputDecoration(
+                                  hintText: AppLocalizations.of(context)!.email,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return AppLocalizations.of(context)!
+                                        .field_required;
+                                  }
+                                  if (!RegExp(
+                                          r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$')
+                                      .hasMatch(value)) {
+                                    return AppLocalizations.of(context)!
+                                        .email_invalid;
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              PasswordTextFormFieldWidget(
+                                passwordController: _passwordController,
+                                readOnly: _viewModel.signup.isRunning,
+                                hintText:
+                                    AppLocalizations.of(context)!.password,
+                                onChanged: _userRegistration.setPassword,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return AppLocalizations.of(context)!
+                                        .field_required;
+                                  }
+                                  if (value.length < 6) {
+                                    return AppLocalizations.of(context)!
+                                        .password_min;
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              if (_viewModel.signup.isRunning)
+                                const CircularProgressIndicator()
+                              else
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      FocusScope.of(context)
+                                          .requestFocus(FocusNode());
+                                      _viewModel.signup
+                                          .execute(_userRegistration);
+                                    }
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(context)!.register,
                                   ),
-                                ],
+                                ),
+                              const SizedBox(
+                                height: 20,
                               ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                              GestureDetector(
+                                onTap: _viewModel.signup.isRunning
+                                    ? null
+                                    : context.pop,
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: AppLocalizations.of(context)!
+                                        .have_account,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                    children: [
+                                      TextSpan(
+                                        text: AppLocalizations.of(context)!
+                                            .signin,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -184,8 +220,8 @@ class _SignupPageState extends State<SignupPage> {
       _viewModel.signup.reset();
       context.pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cadastro realizado com sucesso!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.registration_successful),
           backgroundColor: Colors.green,
         ),
       );
@@ -193,8 +229,8 @@ class _SignupPageState extends State<SignupPage> {
     if (_viewModel.signup.isFailure) {
       _viewModel.signup.reset();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Falha no cadastro'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.registration_failed),
           backgroundColor: Colors.red,
         ),
       );

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { AppError } from '../errors/AppError';
 import { CelebrateError } from 'celebrate';
 
@@ -6,7 +6,7 @@ export const errorHandler = (
     err: Error | CelebrateError,
     req: Request,
     res: Response,
-    next: NextFunction,
+    //next: NextFunction,
 ) => {
     if (err instanceof AppError) {
         res.status(err.statusCode).json({

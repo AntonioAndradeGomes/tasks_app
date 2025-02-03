@@ -1,0 +1,25 @@
+{
+    "login_": "Login.",
+    "login": "Login",
+    "signin": "Sign in",
+    "email": "E-mail",
+    "password": "Password",
+    "no_account": "Don't have an account? ",
+    "signup": "Sign up.",
+    "have_account": "Already have an account? ",
+    "name": "Name",
+    "register": "Register",
+    "email_invalid": "Invalid e-mail",
+    "field_required": "This field is required",
+    "password_min": "Password must be at least 6 characters long",
+    "unable_to_login": "Unable to login",
+    "name_min": "Name too short",
+    "registration_successful": "Registration completed successfully!",
+    "registration_failed": "Registration failed",
+    "my_tasks": "My tasks",
+    "add_task": "Add task",
+    "logout": "Logout",
+    "concluded": "Concluded",
+    "no_task": "You don't have any tasks"
+
+}

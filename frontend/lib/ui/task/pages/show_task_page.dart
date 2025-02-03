@@ -42,34 +42,38 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Scaffold(
-        appBar: AppBar(),
-        body: ListenableBuilder(
-          listenable: Listenable.merge(
-              [_showTaskViewmodel.loadTask, _showTaskViewmodel.deleteTask]),
-          builder: (_, child) {
-            if (_showTaskViewmodel.loadTask.isRunning ||
-                _showTaskViewmodel.deleteTask.isRunning) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (_showTaskViewmodel.loadTask.isFailure) {
-              return Center(
-                child: Text(
-                  _showTaskViewmodel.loadTask.toFailure().toString(),
-                ),
-              );
-            }
-            return child!;
-          },
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+        ),
+        body: SafeArea(
           child: ListenableBuilder(
-            listenable: _showTaskViewmodel.saveTask,
-            builder: (context, child) {
-              return TaskEditableBodyWidget(
-                showTaskViewmodel: _showTaskViewmodel,
-                running: _showTaskViewmodel.saveTask.isRunning,
-              );
+            listenable: Listenable.merge(
+                [_showTaskViewmodel.loadTask, _showTaskViewmodel.deleteTask]),
+            builder: (_, child) {
+              if (_showTaskViewmodel.loadTask.isRunning ||
+                  _showTaskViewmodel.deleteTask.isRunning) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (_showTaskViewmodel.loadTask.isFailure) {
+                return Center(
+                  child: Text(
+                    _showTaskViewmodel.loadTask.toFailure().toString(),
+                  ),
+                );
+              }
+              return child!;
             },
+            child: ListenableBuilder(
+              listenable: _showTaskViewmodel.saveTask,
+              builder: (context, child) {
+                return TaskEditableBodyWidget(
+                  showTaskViewmodel: _showTaskViewmodel,
+                  running: _showTaskViewmodel.saveTask.isRunning,
+                );
+              },
+            ),
           ),
         ),
       ),
