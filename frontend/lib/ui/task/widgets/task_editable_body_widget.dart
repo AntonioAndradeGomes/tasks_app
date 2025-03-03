@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/helpers/colors.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:frontend/ui/task/view_model/show_task_viewmodel.dart';
 import 'package:frontend/ui/task/widgets/select_color_widget.dart';
 import 'package:frontend/ui/task/widgets/select_due_date_widget.dart';
@@ -68,14 +68,15 @@ class TaskEditableBodyWidget extends StatelessWidget {
                           readOnly: running,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           decoration: InputDecoration(
-                            hintText: 'Título',
+                            hintText: AppLocalizations.of(context)!.title,
                             focusedBorder: focusBorder,
                           ),
                           maxLines: null,
                           initialValue: task.title,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Título obrigatório";
+                              return AppLocalizations.of(context)!
+                                  .mandatory_title;
                             }
                             return null;
                           },
@@ -97,7 +98,7 @@ class TaskEditableBodyWidget extends StatelessWidget {
                     readOnly: running,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
-                      hintText: 'Descrição',
+                      hintText: AppLocalizations.of(context)!.description,
                       focusedBorder: focusBorder,
                     ),
                     onChanged: showTaskViewmodel.setDescription,
@@ -132,15 +133,15 @@ class TaskEditableBodyWidget extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: color,
                             ),
-                            child: const Text(
-                              'Salvar alterações',
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizations.of(context)!.save,
+                              style: const TextStyle(
                                 color: Colors.white,
                               ),
                             ),
                           ),
                   const SizedBox(
-                    height: 50,
+                    height: 100,
                   )
                 ],
               ),

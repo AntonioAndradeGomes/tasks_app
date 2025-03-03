@@ -4,12 +4,11 @@ import 'package:frontend/data/exceptions/http_unauthorized_exception.dart';
 import 'package:frontend/routing/routes.dart';
 import 'package:frontend/ui/auth/logout/widgets/logout_widget.dart';
 import 'package:frontend/ui/home/view_model/home_view_model.dart';
-import 'package:frontend/ui/home/widgets/concluded_card_tap_widget.dart';
-import 'package:frontend/ui/home/widgets/task_card.dart';
+import 'package:frontend/ui/home/widgets/home_body_page_widget.dart';
 import 'package:frontend/ui/home/widgets/tasks_shimmer_list_widget.dart';
 import 'package:go_router/go_router.dart';
-import 'package:result_command/result_command.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:result_command/result_command.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,14 +23,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _homeViewModel = getIt<HomeViewModel>();
-
     _homeViewModel.deleteTask.addListener(_resultDelete);
+    _homeViewModel.updateTask.addListener(_resultUpdate);
     super.initState();
   }
 
   @override
   void dispose() {
     _homeViewModel.deleteTask.removeListener(_resultDelete);
+    _homeViewModel.updateTask.removeListener(_resultUpdate);
     super.dispose();
   }
 
@@ -39,7 +39,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.my_tasks),
+        title: Text(
+          AppLocalizations.of(context)!.my_tasks,
+        ),
         forceMaterialTransparency: true,
         actions: const [
           LogoutWidget(),
@@ -83,21 +85,24 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               }*/
+
+              /*print((_homeViewModel.load.value as FailureCommand).error
+                  is HttpUnauthorizedException);*/
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Erro ao carregar as tarefas!',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.error_tasks_load,
+                      style: const TextStyle(
                         fontSize: 16,
                       ),
                     ),
                     TextButton(
                       onPressed: _homeViewModel.load.execute,
-                      child: const Text(
-                        'Tente novamente',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)!.try_again,
+                        style: const TextStyle(
                           fontSize: 16,
                         ),
                       ),
@@ -108,91 +113,8 @@ class _HomePageState extends State<HomePage> {
             }
             return child!;
           },
-          child: ListenableBuilder(
-            listenable: _homeViewModel,
-            builder: (_, __) {
-              final items = _homeViewModel.tasks;
-              if (items.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'Sem tarefas!',
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                );
-              }
-              return RefreshIndicator(
-                onRefresh: () {
-                  return _homeViewModel.load.execute();
-                },
-                child: ListView(
-                  padding: const EdgeInsets.only(
-                    bottom: 150,
-                    top: 10,
-                    left: 10,
-                    right: 10,
-                  ),
-                  children: [
-                    ..._homeViewModel.uncompletedTasks.map(
-                      (task) => TaskCard(
-                        task: task,
-                        onPressed: () =>
-                            _homeViewModel.updateTask.execute(task),
-                        confirmDismiss: (direction) async {
-                          await _homeViewModel.deleteTask.execute(task.id!);
-                          if (_homeViewModel.deleteTask.isSuccess) {
-                            return true;
-                          }
-                          return false;
-                        },
-                      ),
-                    ),
-                    if (_homeViewModel.completedTasks.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ConcludedCardTapWidget(
-                            isOpen: _homeViewModel.showCompleted,
-                            onTap: () {
-                              _homeViewModel.showCompleted =
-                                  !_homeViewModel.showCompleted;
-                            },
-                          ),
-                          AnimatedSwitcher(
-                            duration: const Duration(
-                              milliseconds: 400,
-                            ),
-                            child: _homeViewModel.showCompleted
-                                ? Column(
-                                    children: _homeViewModel.completedTasks
-                                        .map(
-                                          (task) => TaskCard(
-                                            task: task,
-                                            onPressed: () => _homeViewModel
-                                                .updateTask
-                                                .execute(task),
-                                            confirmDismiss: (direction) async {
-                                              await _homeViewModel.deleteTask
-                                                  .execute(task.id!);
-                                              if (_homeViewModel
-                                                  .deleteTask.isSuccess) {
-                                                return true;
-                                              }
-                                              return false;
-                                            },
-                                          ),
-                                        )
-                                        .toList(),
-                                  )
-                                : const SizedBox.shrink(),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              );
-            },
+          child: HomeBodyPageWidget(
+            homeViewModel: _homeViewModel,
           ),
         ),
       ),
@@ -203,8 +125,10 @@ class _HomePageState extends State<HomePage> {
     if (_homeViewModel.deleteTask.isSuccess) {
       _homeViewModel.deleteTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Task Deleted'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_deleted,
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -213,8 +137,35 @@ class _HomePageState extends State<HomePage> {
     if (_homeViewModel.deleteTask.isFailure) {
       _homeViewModel.deleteTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error deleting task'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_deleted_error,
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _resultUpdate() async {
+    if (_homeViewModel.updateTask.isSuccess) {
+      _homeViewModel.updateTask.reset();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_updated,
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+    if (_homeViewModel.updateTask.isFailure) {
+      _homeViewModel.updateTask.reset();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_updated_error,
+          ),
           backgroundColor: Colors.red,
         ),
       );

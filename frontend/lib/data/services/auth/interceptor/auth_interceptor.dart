@@ -16,14 +16,15 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     _log.info('${options.method} -> ${options.uri}');
+    _log.info('${options.data}');
     final requiresAuth = options.extra['requiresAuth'] ?? true;
     if (!requiresAuth) {
       handler.next(options);
       return;
     }
     _log.info('Fetching auth token');
-    var token = await _authLocalStorage.fetchToken();
-    // token = Success('');
+    final token = await _authLocalStorage.fetchToken();
+
     token.fold(
       (token) {
         if (token.isEmpty) {

@@ -1,7 +1,9 @@
 import 'package:frontend/core/constants/constants.dart';
 import 'package:frontend/data/services/client_http.dart';
 import 'package:frontend/domain/dtos/task_dto.dart';
+import 'package:frontend/domain/models/filter_model.dart';
 import 'package:frontend/domain/models/task_model.dart';
+import 'package:frontend/domain/models/tasks_response.dart';
 import 'package:result_dart/result_dart.dart';
 
 class TaskClientHttp {
@@ -14,15 +16,14 @@ class TaskClientHttp {
   })  : _clientHttp = clientHttp,
         _baseUrl = baseUrl ?? '${Constants.backendUrl}/tasks';
 
-  AsyncResult<List<TaskModel>> getUserTasks() async {
+  AsyncResult<TasksResponse> getUserTasks(FilterModel filter) async {
     final response = await _clientHttp.get(
       _baseUrl,
       requiresAuth: true,
+      queryParameters: filter.toQuery(),
     );
 
-    return response.map((response) => (response.data as List)
-        .map((task) => TaskModel.fromMap(task))
-        .toList());
+    return response.map((response) => TasksResponse.fromMap(response.data));
   }
 
   AsyncResult<TaskModel> getUserTaskById(

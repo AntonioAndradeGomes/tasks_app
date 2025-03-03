@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SelectDueDateWidget extends StatelessWidget {
   final DateTime? dueAt;
@@ -23,7 +24,7 @@ class SelectDueDateWidget extends StatelessWidget {
               final data = await showDatePicker(
                 context: context,
                 currentDate: DateTime.now(),
-                helpText: "Selecionar a data de conclusão da tarefa",
+                helpText: AppLocalizations.of(context)!.due_at_help_text,
                 initialDate: dueAt ?? DateTime.now(),
                 firstDate: DateTime(2015),
                 lastDate: DateTime(2100),
@@ -48,7 +49,7 @@ class SelectDueDateWidget extends StatelessWidget {
               Text(
                 dueAt != null
                     ? DateFormat("d 'de' MMMM 'de' y", 'pt_BR').format(dueAt!)
-                    : 'Adicionar data de conclusão',
+                    : AppLocalizations.of(context)!.due_at,
                 style: TextStyle(
                   color: selectedColor != null && dueAt != null
                       ? selectedColor

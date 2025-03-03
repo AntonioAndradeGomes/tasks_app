@@ -20,6 +20,23 @@
     "add_task": "Add task",
     "logout": "Logout",
     "concluded": "Concluded",
-    "no_task": "You don't have any tasks"
+    "no_task": "You don't have any tasks",
+    "error_tasks_load": "Error loading tasks",
+    "try_again": "Try again",
+    "task_deleted": "Task deleted successfully!",
+    "task_deleted_error": "Error deleting task!",
+    "task_updated": "Task updated successfully!",
+    "task_updated_error": "Error updating task!",
+    "save": "Save changes",
+    "title": "Title",
+    "description": "Description",
+    "due_at": "Add completion date",
+    "due_at_help_text": "Select the task completion date",
+    "change_color": "Select color",
+    "mandatory_title": "Title is mandatory",
+    "mandatory_color": "Color is mandatory",
+    "task_saved": "Task saved successfully!",
+    "task_saved_error": "Error saving task!"
+
 
 }

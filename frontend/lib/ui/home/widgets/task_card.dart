@@ -18,32 +18,35 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final completed = task.completedAt != null;
-    return Card(
-      child: Dismissible(
-        key: ValueKey(task.id),
-        confirmDismiss: confirmDismiss,
-        direction: DismissDirection.endToStart,
-        background: Container(
-          alignment: Alignment.centerRight,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.red,
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  right: 20,
-                ),
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                  size: 35,
-                ),
+    return Dismissible(
+      key: ValueKey(task.id),
+      confirmDismiss: confirmDismiss,
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.red,
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                right: 20,
               ),
-            ],
-          ),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 35,
+              ),
+            ),
+          ],
+        ),
+      ),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Ink(
           decoration: BoxDecoration(

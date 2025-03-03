@@ -1,10 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:frontend/domain/models/user_model.dart';
 
-class LoginResponse {
+class LoginResponse extends Equatable {
   final String token;
   final UserModel user;
 
-  LoginResponse({
+  const LoginResponse({
     required this.token,
     required this.user,
   });
@@ -15,4 +16,7 @@ class LoginResponse {
       user: UserModel.fromMap(json['user']),
     );
   }
+
+  @override
+  List<Object?> get props => [token, user];
 }

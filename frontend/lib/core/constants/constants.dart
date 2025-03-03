@@ -1,5 +1,5 @@
 abstract class Constants {
-  static const String backendUrl = 'http://192.168.0.6:8000';
+  static const String backendUrl = 'http://localhost:8000';
   static const List<String> colors = [
     "#6495ED",
     "#7B68EE",
@@ -22,4 +22,5 @@ abstract class Constants {
   ];
 
   static const String localStorageTokenKey = 'TOKEN';
+  static const String localStorageFilterKey = 'FILTER';
 }

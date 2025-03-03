@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/domain/dtos/task_dto.dart';
 import 'package:frontend/domain/models/task_model.dart';
+import 'package:frontend/domain/models/tasks_response.dart';
 import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
@@ -41,11 +42,11 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  late Command0<List<TaskModel>> load;
+  late Command0<TasksResponse> load;
   late final Command1<TaskModel, TaskModel> updateTask;
   late final Command1<Unit, String> deleteTask;
 
-  AsyncResult<List<TaskModel>> _load() {
+  AsyncResult<TasksResponse> _load() {
     return _tasksRepository.fetchTasks();
   }
 

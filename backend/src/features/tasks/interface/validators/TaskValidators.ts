@@ -29,7 +29,7 @@ const updateTaskValidator = celebrate({
     }),
     [Segments.BODY]: Joi.object({
         title: Joi.string().optional(),
-        description: Joi.string().optional().allow(null),
+        description: Joi.string().optional().allow(null, ''),
         hexColor: Joi.string()
             .optional()
             .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)

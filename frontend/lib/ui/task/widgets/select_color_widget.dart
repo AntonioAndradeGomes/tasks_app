@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/constants/constants.dart';
 import 'package:frontend/ui/task/widgets/color_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SelectColorWidget extends StatelessWidget {
   final String? selectColor;
@@ -20,7 +21,7 @@ class SelectColorWidget extends StatelessWidget {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (color) {
         if (color == null) {
-          return 'Selecione uma cor';
+          return AppLocalizations.of(context)!.mandatory_color;
         }
         return null;
       },
@@ -28,9 +29,9 @@ class SelectColorWidget extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Selecionar cor',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.change_color,
+              style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 15,
               ),

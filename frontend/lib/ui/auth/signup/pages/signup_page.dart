@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/config/dependencies_injector.dart';
 import 'package:frontend/domain/dtos/user_registration.dart';
-import 'package:frontend/domain/validators/user_registration_validator.dart';
 import 'package:frontend/ui/auth/login/widgets/password_text_form_field_widget.dart';
 import 'package:frontend/ui/auth/signup/view_model/signup_viewmodel.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +20,6 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _userRegistration = UserRegistration();
-  final _userRegistrationValidator = UserRegistrationValidator();
 
   late SignupViewmodel _viewModel;
 

@@ -4,6 +4,7 @@ import 'package:frontend/ui/task/view_model/show_task_viewmodel.dart';
 import 'package:frontend/ui/task/widgets/task_editable_body_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ShowTaskPage extends StatefulWidget {
   final String? taskId;
@@ -84,8 +85,10 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
     if (_showTaskViewmodel.saveTask.isSuccess) {
       _showTaskViewmodel.saveTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Task saved'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_saved,
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -93,8 +96,10 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
     if (_showTaskViewmodel.saveTask.isFailure) {
       _showTaskViewmodel.saveTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error saving task'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_saved_error,
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -106,8 +111,10 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
       _showTaskViewmodel.saveTask.reset();
       context.pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Task deleted'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_deleted,
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -115,8 +122,10 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
     if (_showTaskViewmodel.deleteTask.isFailure) {
       _showTaskViewmodel.saveTask.reset();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error deleted task'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.task_deleted_error,
+          ),
           backgroundColor: Colors.red,
         ),
       );

@@ -8,6 +8,7 @@ import 'package:frontend/data/services/auth/auth_local_storage.dart';
 import 'package:frontend/data/services/auth/interceptor/auth_interceptor.dart';
 import 'package:frontend/data/services/client_http.dart';
 import 'package:frontend/data/services/local_storage_service.dart';
+import 'package:frontend/data/services/tasks/filter_local_storage.dart';
 import 'package:frontend/data/services/tasks/task_client_http.dart';
 import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
@@ -16,6 +17,7 @@ import 'package:frontend/ui/auth/login/view_models/login_view_model.dart';
 import 'package:frontend/ui/auth/logout/view_model/logout_viewmodel.dart';
 import 'package:frontend/ui/auth/signup/view_model/signup_viewmodel.dart';
 import 'package:frontend/ui/home/view_model/home_view_model.dart';
+import 'package:frontend/ui/my_app_viewmodel.dart';
 import 'package:frontend/ui/task/view_model/show_task_viewmodel.dart';
 import 'package:get_it/get_it.dart';
 
@@ -62,6 +64,12 @@ Future<void> setupDependencies() async {
     ),
   );
 
+  getIt.registerLazySingleton(
+    () => MyAppViewmodel(
+      authRepository: getIt(),
+    ),
+  );
+
   getIt.registerFactory(
     () => LoginViewModel(
       repository: getIt(),
@@ -81,6 +89,12 @@ Future<void> setupDependencies() async {
   );
 
   getIt.registerLazySingleton(
+    () => FilterLocalStorage(
+      localStorageService: getIt(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
     () => TaskClientHttp(
       clientHttp: getIt(),
     ),
@@ -89,6 +103,7 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<TasksRepository>(
     () => TasksRepositoryRemote(
       taskClientHttp: getIt(),
+      filterLocalStorage: getIt(),
     ),
   );
 
