@@ -19,9 +19,9 @@ class TasksRepositoryRemote extends TasksRepository {
         _filterLocalStorage = filterLocalStorage;
 
   final _log = Logger('TasksRepositoryRemote');
-  TasksResponse _tasksResponse = TasksResponse(
+  TasksResponse _tasksResponse = const TasksResponse(
     tasks: [],
-    filter: const FilterModel(),
+    filter: FilterModel(),
   );
 
   @override
@@ -72,15 +72,16 @@ class TasksRepositoryRemote extends TasksRepository {
     return result.fold(
       (result) {
         _log.finer('Tasks successfully searched');
+        print(result);
         _tasksResponse = result;
         notifyListeners();
         return Success(result);
       },
       (error) {
         _log.severe('Failed to search for tasks', error);
-        _tasksResponse = TasksResponse(
+        _tasksResponse = const TasksResponse(
           tasks: [],
-          filter: const FilterModel(),
+          filter: FilterModel(),
         );
         notifyListeners();
         return Failure(error);

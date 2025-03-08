@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/config/dependencies_injector.dart';
-import 'package:frontend/data/exceptions/http_unauthorized_exception.dart';
 import 'package:frontend/routing/routes.dart';
 import 'package:frontend/ui/auth/logout/widgets/logout_widget.dart';
 import 'package:frontend/ui/home/view_model/home_view_model.dart';
 import 'package:frontend/ui/home/widgets/home_body_page_widget.dart';
+import 'package:frontend/ui/home/widgets/order_tasks_sheet.dart';
 import 'package:frontend/ui/home/widgets/tasks_shimmer_list_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:result_command/result_command.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -43,8 +42,19 @@ class _HomePageState extends State<HomePage> {
           AppLocalizations.of(context)!.my_tasks,
         ),
         forceMaterialTransparency: true,
-        actions: const [
-          LogoutWidget(),
+        actions: [
+          const LogoutWidget(),
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (_) => const OrderTasksSheet(),
+              );
+            },
+            icon: const Icon(
+              Icons.sort,
+            ),
+          )
         ],
       ),
       floatingActionButton: ListenableBuilder(
@@ -69,25 +79,6 @@ class _HomePageState extends State<HomePage> {
               return const TasksShimmerListWidget();
             }
             if (_homeViewModel.load.isFailure) {
-              /*if (((_homeViewModel.load.value as FailureCommand).error
-                  is HttpUnauthorizedException)) {
-                return const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Você não está autenticado!',
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }*/
-
-              /*print((_homeViewModel.load.value as FailureCommand).error
-                  is HttpUnauthorizedException);*/
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

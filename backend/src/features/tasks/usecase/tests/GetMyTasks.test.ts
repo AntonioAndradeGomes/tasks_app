@@ -1,3 +1,4 @@
+import { AppError } from '../../../../shared/errors/AppError';
 import { TaskRepository } from '../../domain/interface/TaskRepository';
 import { GetMyTasks } from '../GetMyTasks';
 
@@ -9,6 +10,7 @@ describe('GetMyTasks', () => {
         // Mockando o repositório
         mockTaskRepository = {
             getTasksByUserId: jest.fn(),
+            getTaskByUserIdAndTaskId: jest.fn(),
         } as unknown as jest.Mocked<TaskRepository>;
 
         // Instanciando o caso de uso
@@ -38,33 +40,47 @@ describe('GetMyTasks', () => {
             },
         ];
 
+        const expectedTasks = {
+            tasks: mockTasks,
+            filter: {
+                orderBy: 'created_at',
+                order: 'asc',
+            },
+        };
+
         // Mockando a resposta do repositório
-        mockTaskRepository.getTasksByUserId.mockResolvedValue(mockTasks);
+        mockTaskRepository.getTasksByUserId.mockResolvedValue(expectedTasks);
 
         // Executando o caso de uso
-        const tasks = await getMyTasks.execute(userId);
+        const tasks = await getMyTasks.execute({
+            userId,
+            orderBy: 'created_at',
+            order: 'asc',
+        });
 
         // Verificando o retorno
-        expect(tasks).toEqual(mockTasks);
-        expect(mockTaskRepository.getTasksByUserId).toHaveBeenCalledWith(
-            userId,
-        );
+        expect(tasks).toEqual(expectedTasks);
     });
 
     it('deve retornar uma lista vazia se o usuário não tiver tarefas', async () => {
         const userId = 'user-123';
 
-        // Mockando o repositório para retornar uma lista vazia
-        mockTaskRepository.getTasksByUserId.mockResolvedValue([]);
+        const expectedTasks = {
+            tasks: [],
+            filter: {
+                orderBy: 'created_at',
+                order: 'asc',
+            },
+        };
 
-        // Executando o caso de uso
-        const tasks = await getMyTasks.execute(userId);
+        // Mockando o repositório para retornar uma lista vazia
+        mockTaskRepository.getTasksByUserId.mockResolvedValue(expectedTasks);
+
+        // Executando o caso de us
+        const tasks = await getMyTasks.execute({ userId });
 
         // Verificando o retorno
-        expect(tasks).toEqual([]);
-        expect(mockTaskRepository.getTasksByUserId).toHaveBeenCalledWith(
-            userId,
-        );
+        expect(tasks).toEqual(expectedTasks);
     });
 
     it('deve lançar um erro se o repositório lançar um erro', async () => {
@@ -76,11 +92,49 @@ describe('GetMyTasks', () => {
         );
 
         // Verificando se o erro é lançado corretamente
-        await expect(getMyTasks.execute(userId)).rejects.toThrow(
+        await expect(getMyTasks.execute({ userId })).rejects.toThrow(
             'Database error',
         );
-        expect(mockTaskRepository.getTasksByUserId).toHaveBeenCalledWith(
-            userId,
+    });
+
+    it('deve retornar 404 se não encontrar a tarefa com taskId informado', async () => {
+        mockTaskRepository.getTaskByUserIdAndTaskId.mockResolvedValue(null);
+
+        const params = {
+            userId: 'user-123',
+            taskId: 'task-123',
+        };
+
+        await expect(getMyTasks.execute(params)).rejects.toThrow(AppError);
+        await expect(getMyTasks.execute(params)).rejects.toThrow(
+            'Task not found',
         );
+
+        expect(
+            mockTaskRepository.getTaskByUserIdAndTaskId,
+        ).toHaveBeenCalledWith(params.userId, params.taskId);
+    });
+
+    it('deve retornar a tarefa com taskId informado', async () => {
+        const task = {
+            id: 'task-123',
+            title: 'Task 1',
+            description: 'Description 1',
+            hexColor: '#FF0000',
+            user_id: 'user-123',
+            created_at: new Date(),
+            updated_at: new Date(),
+        };
+
+        mockTaskRepository.getTaskByUserIdAndTaskId.mockResolvedValue(task);
+
+        const params = {
+            userId: 'user-123',
+            taskId: 'task-123',
+        };
+
+        const result = await getMyTasks.execute(params);
+
+        expect(result).toEqual(task);
     });
 });

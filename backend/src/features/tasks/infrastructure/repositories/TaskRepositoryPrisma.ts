@@ -2,6 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { TaskRepository } from '../../domain/interface/TaskRepository';
 import { TaskEntity } from '../../domain/entities/TaskEntity';
 import { PrismaClient } from '@prisma/client';
+import { TaskFilterEntity } from '../../domain/entities/TaskFilterEntity';
 
 @injectable()
 export class TaskRepositoryPrisma implements TaskRepository {
@@ -44,11 +45,11 @@ export class TaskRepositoryPrisma implements TaskRepository {
         });
     }
 
-    getTasksByUserId(
+    async getTasksByUserId(
         userId: string,
         orderBy: string | undefined,
         order: string | undefined,
-    ): Promise<TaskEntity[]> {
+    ): Promise<TaskFilterEntity> {
         // Defina valores padrão para orderBy e order
         const validOrderByFields = [
             'created_at',
@@ -66,14 +67,28 @@ export class TaskRepositoryPrisma implements TaskRepository {
         const orderDirection = validOrderDirections.includes(order || '')
             ? order
             : 'desc';
-        return this.prisma.task.findMany({
+
+        const tasks = await this.prisma.task.findMany({
             where: {
                 user_id: userId,
             },
-            orderBy: {
-                [orderByField as string]: orderDirection,
-            },
+            orderBy: [
+                {
+                    [orderByField as string]: orderDirection,
+                },
+                {
+                    [validOrderByFields[0]]: orderDirection,
+                },
+            ],
         });
+
+        return {
+            filter: {
+                orderBy: orderBy || null,
+                order: orderBy != null ? orderDirection : order || null,
+            },
+            tasks: tasks,
+        };
     }
 
     updateTask(task: TaskEntity): Promise<TaskEntity> {

@@ -129,13 +129,24 @@ describe('TaskRepositoryPrisma', () => {
             },
         ];
 
+        const tasksFilterEntityReturn = {
+            tasks: tasks,
+            filter: {
+                orderBy: null,
+                order: null,
+            },
+        };
+
         (prisma.task.findMany as jest.Mock).mockResolvedValue(tasks);
 
         const result = await repository.getTasksByUserId(userId);
 
-        expect(result).toEqual(tasks);
+        expect(result).toEqual(tasksFilterEntityReturn);
         expect(prisma.task.findMany).toHaveBeenCalledWith({
             where: { user_id: userId },
+            orderBy: {
+                created_at: 'desc',
+            },
         });
     });
 

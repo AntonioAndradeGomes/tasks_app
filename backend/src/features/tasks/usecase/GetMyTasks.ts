@@ -1,21 +1,12 @@
 import { inject, injectable } from 'tsyringe';
 import { TaskRepository } from '../domain/interface/TaskRepository';
 import { AppError } from '../../../shared/errors/AppError';
-import { TaskEntity } from '../domain/entities/TaskEntity';
 
 interface GetTasksParams {
     userId: string;
-    taskId?: string;
-    orderBy?: string;
-    order?: string;
-}
-
-interface TaskResponse {
-    filter?: {
-        orderBy?: string;
-        order?: string;
-    };
-    tasks: TaskEntity[];
+    taskId?: string | undefined;
+    orderBy?: string | undefined;
+    order?: string | undefined;
 }
 
 @injectable()
@@ -25,12 +16,7 @@ export class GetMyTasks {
     ) {}
     async execute({ userId, taskId, orderBy, order }: GetTasksParams) {
         if (!taskId) {
-            const tasks = await this.taskRepository.getTasksByUserId(
-                userId,
-                orderBy,
-                order,
-            );
-            return { filter: { orderBy, order }, tasks };
+            return this.taskRepository.getTasksByUserId(userId, orderBy, order);
         }
 
         const task = await this.taskRepository.getTaskByUserIdAndTaskId(

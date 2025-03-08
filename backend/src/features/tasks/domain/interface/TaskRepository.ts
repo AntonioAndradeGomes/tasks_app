@@ -1,12 +1,13 @@
 import { TaskEntity } from '../entities/TaskEntity';
+import { TaskFilterEntity } from '../entities/TaskFilterEntity';
 
 export interface TaskRepository {
     createTask(task: TaskEntity): Promise<TaskEntity>;
     getTasksByUserId(
         userId: string,
-        orderBy: string | undefined,
-        order: string | undefined,
-    ): Promise<TaskEntity[]>;
+        orderBy?: string | undefined,
+        order?: string | undefined,
+    ): Promise<TaskFilterEntity>;
     getTaskByUserIdAndTaskId(
         userId: string,
         taskId: string,

@@ -36,5 +36,9 @@
     "mandatory_title": "Título é obrigatório",
     "mandatory_color": "Cor é obrigatória",
     "task_saved": "Tarefa salva com sucesso!",
-    "task_saved_error": "Erro ao salvar tarefa!"
+    "task_saved_error": "Erro ao salvar tarefa!",
+    "sort": "Classificar",
+    "alphabetical_order": "Ordem alfabetica",
+    "created_date": "Data de criação",
+    "completion_date": "Data de conclusão"
 }
