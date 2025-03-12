@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/ui/home/view_model/home_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:frontend/ui/home/widgets/concluded_card_tap_widget.dart';
+import 'package:frontend/ui/home/widgets/card_tap_widget.dart';
 import 'package:frontend/ui/home/widgets/task_card.dart';
 
 class HomeBodyPageWidget extends StatefulWidget {
@@ -21,8 +21,7 @@ class _HomeBodyPageWidgetState extends State<HomeBodyPageWidget> {
     return ListenableBuilder(
       listenable: widget.homeViewModel,
       builder: (_, __) {
-        final items = widget.homeViewModel.tasks;
-        if (items.isEmpty) {
+        if (widget.homeViewModel.tasksIsEmpty) {
           return Center(
             child: Text(
               AppLocalizations.of(context)!.no_task,
@@ -62,7 +61,8 @@ class _HomeBodyPageWidgetState extends State<HomeBodyPageWidget> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ConcludedCardTapWidget(
+                    CardTapWidget(
+                      label: AppLocalizations.of(context)!.concluded,
                       isOpen: widget.homeViewModel.showCompleted,
                       onTap: () {
                         widget.homeViewModel.showCompleted =

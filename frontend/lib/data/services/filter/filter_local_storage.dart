@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:frontend/core/constants/constants.dart';
 import 'package:frontend/data/services/local_storage_service.dart';
 import 'package:frontend/domain/models/filter_model.dart';

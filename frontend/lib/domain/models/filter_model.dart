@@ -117,6 +117,19 @@ class FilterModel extends Equatable {
     );
   }
 
+  bool get isNotFilter => orderBy == null && order == null;
+
+  FilterModel copyWith({
+    OrderBy? orderBy,
+    Order? order,
+    bool reset = false,
+  }) {
+    return FilterModel(
+      orderBy: reset ? null : orderBy ?? this.orderBy,
+      order: reset ? null : order ?? this.order,
+    );
+  }
+
   @override
   List<Object?> get props => [order, orderBy];
 }

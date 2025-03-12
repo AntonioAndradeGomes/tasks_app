@@ -17,6 +17,7 @@ class AuthInterceptor extends Interceptor {
   ) async {
     _log.info('${options.method} -> ${options.uri}');
     _log.info('${options.data}');
+    _log.info('${options.queryParameters}');
     final requiresAuth = options.extra['requiresAuth'] ?? true;
     if (!requiresAuth) {
       handler.next(options);

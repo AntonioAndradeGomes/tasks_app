@@ -3,12 +3,14 @@ import 'package:frontend/data/services/client_http.dart';
 import 'package:frontend/domain/dtos/task_dto.dart';
 import 'package:frontend/domain/models/filter_model.dart';
 import 'package:frontend/domain/models/task_model.dart';
-import 'package:frontend/domain/models/tasks_response.dart';
+import 'package:logging/logging.dart';
+
 import 'package:result_dart/result_dart.dart';
 
 class TaskClientHttp {
   final ClientHttp _clientHttp;
   final String _baseUrl;
+  final _log = Logger('TaskClientHttp');
 
   TaskClientHttp({
     required ClientHttp clientHttp,
@@ -16,14 +18,17 @@ class TaskClientHttp {
   })  : _clientHttp = clientHttp,
         _baseUrl = baseUrl ?? '${Constants.backendUrl}/tasks';
 
-  AsyncResult<TasksResponse> getUserTasks(FilterModel filter) async {
+  AsyncResult<List<TaskModel>> getUserTasks(FilterModel? filter) async {
+    _log.finer('Searching for tasks');
     final response = await _clientHttp.get(
       _baseUrl,
       requiresAuth: true,
-      queryParameters: filter.toQuery(),
+      queryParameters: filter?.toQuery(),
     );
 
-    return response.map((response) => TasksResponse.fromMap(response.data));
+    return response.map((response) => (response.data['tasks'] as List)
+        .map((task) => TaskModel.fromMap(task))
+        .toList());
   }
 
   AsyncResult<TaskModel> getUserTaskById(

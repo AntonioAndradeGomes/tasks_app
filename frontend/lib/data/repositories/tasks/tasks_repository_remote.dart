@@ -1,31 +1,24 @@
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
-import 'package:frontend/data/services/tasks/filter_local_storage.dart';
 import 'package:frontend/data/services/tasks/task_client_http.dart';
 import 'package:frontend/domain/dtos/task_dto.dart';
 import 'package:frontend/domain/models/filter_model.dart';
 import 'package:frontend/domain/models/task_model.dart';
-import 'package:frontend/domain/models/tasks_response.dart';
 import 'package:logging/logging.dart';
 import 'package:result_dart/result_dart.dart';
 
 class TasksRepositoryRemote extends TasksRepository {
   final TaskClientHttp _taskClientHttp;
-  final FilterLocalStorage _filterLocalStorage;
 
   TasksRepositoryRemote({
-    required FilterLocalStorage filterLocalStorage,
     required TaskClientHttp taskClientHttp,
-  })  : _taskClientHttp = taskClientHttp,
-        _filterLocalStorage = filterLocalStorage;
+  }) : _taskClientHttp = taskClientHttp;
 
   final _log = Logger('TasksRepositoryRemote');
-  TasksResponse _tasksResponse = const TasksResponse(
-    tasks: [],
-    filter: FilterModel(),
-  );
+  final List<TaskModel> _tasks = [];
+  FilterModel _filter = FilterModel.empty();
 
   @override
-  List<TaskModel> get tasks => _tasksResponse.tasks;
+  List<TaskModel> get tasks => _tasks;
 
   @override
   AsyncResult<TaskModel> createTask(TaskDto task) async {
@@ -33,7 +26,7 @@ class TasksRepositoryRemote extends TasksRepository {
     return result.fold(
       (task) {
         _log.finer('Successfully created task');
-        _tasksResponse.tasks.insert(0, task);
+        _tasks.insert(0, task);
         notifyListeners();
         return Success(task);
       },
@@ -50,7 +43,7 @@ class TasksRepositoryRemote extends TasksRepository {
     return result.fold(
       (_) {
         _log.finer('Successfully deleted task');
-        _tasksResponse.tasks.removeWhere((task) => task.id == id);
+        _tasks.removeWhere((task) => task.id == id);
         notifyListeners();
         return const Success(unit);
       },
@@ -62,27 +55,21 @@ class TasksRepositoryRemote extends TasksRepository {
   }
 
   @override
-  AsyncResult<TasksResponse> fetchTasks() async {
-    _log.finer('Searching for filter');
-    final filterResult = await _filterLocalStorage.getData();
-    final filter = filterResult.getOrElse((_) => FilterModel.empty());
-
+  AsyncResult<List<TaskModel>> fetchTasks(FilterModel filter) async {
+    _filter = filter;
     _log.finer('Searching for tasks');
     final result = await _taskClientHttp.getUserTasks(filter);
     return result.fold(
       (result) {
         _log.finer('Tasks successfully searched');
-        print(result);
-        _tasksResponse = result;
+        _tasks.clear();
+        _tasks.addAll(result);
         notifyListeners();
         return Success(result);
       },
       (error) {
         _log.severe('Failed to search for tasks', error);
-        _tasksResponse = const TasksResponse(
-          tasks: [],
-          filter: FilterModel(),
-        );
+        _tasks.clear();
         notifyListeners();
         return Failure(error);
       },
@@ -110,12 +97,11 @@ class TasksRepositoryRemote extends TasksRepository {
     return result.fold(
       (task) {
         _log.finer('Successfully updated task');
-        final index =
-            _tasksResponse.tasks.indexWhere((element) => element.id == task.id);
+        final index = _tasks.indexWhere((element) => element.id == task.id);
         if (index != -1) {
-          _tasksResponse.tasks[index] = task;
+          _tasks[index] = task;
         } else {
-          _tasksResponse.tasks.insert(0, task);
+          _tasks.insert(0, task);
         }
         notifyListeners();
         return Success(task);
@@ -126,7 +112,4 @@ class TasksRepositoryRemote extends TasksRepository {
       },
     );
   }
-
-  @override
-  FilterModel get filter => _tasksResponse.filter;
 }

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/data/repositories/auth/auth_repository.dart';
 import 'package:frontend/data/repositories/auth/auth_repository_remote.dart';
+import 'package:frontend/data/repositories/filter/filter_repository.dart';
+import 'package:frontend/data/repositories/filter/filter_repository_local.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository.dart';
 import 'package:frontend/data/repositories/tasks/tasks_repository_remote.dart';
 import 'package:frontend/data/services/auth/auth_client_http.dart';
@@ -8,7 +10,7 @@ import 'package:frontend/data/services/auth/auth_local_storage.dart';
 import 'package:frontend/data/services/auth/interceptor/auth_interceptor.dart';
 import 'package:frontend/data/services/client_http.dart';
 import 'package:frontend/data/services/local_storage_service.dart';
-import 'package:frontend/data/services/tasks/filter_local_storage.dart';
+import 'package:frontend/data/services/filter/filter_local_storage.dart';
 import 'package:frontend/data/services/tasks/task_client_http.dart';
 import 'package:frontend/domain/use_case/task/check_or_uncheck_task_use_case.dart';
 import 'package:frontend/domain/use_case/task/save_task_use_case.dart';
@@ -94,6 +96,12 @@ Future<void> setupDependencies() async {
     ),
   );
 
+  getIt.registerLazySingleton<FilterRepository>(
+    () => FilterRepositoryLocal(
+      filterLocalStorage: getIt(),
+    ),
+  );
+
   getIt.registerLazySingleton(
     () => TaskClientHttp(
       clientHttp: getIt(),
@@ -103,7 +111,6 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<TasksRepository>(
     () => TasksRepositoryRemote(
       taskClientHttp: getIt(),
-      filterLocalStorage: getIt(),
     ),
   );
 
@@ -117,6 +124,7 @@ Future<void> setupDependencies() async {
     () => HomeViewModel(
       tasksRepository: getIt(),
       checkOrUncheckTaskUseCase: getIt(),
+      filterRepository: getIt(),
     ),
   );
 

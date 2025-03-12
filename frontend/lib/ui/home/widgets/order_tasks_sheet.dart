@@ -8,7 +8,11 @@ class OrderTasksSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usesOrderBy = [OrderBy.title, OrderBy.completedAt, OrderBy.createdAt];
+    final usesOrderBy = [
+      OrderBy.title,
+      OrderBy.completedAt,
+      OrderBy.createdAt,
+    ];
     return Container(
       /*margin: EdgeInsets.only(
         left: 12,
@@ -65,7 +69,9 @@ class OrderTasksSheet extends StatelessWidget {
                       e.label(context),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      context.pop(e);
+                    },
                   ),
                 )
                 .toList(),

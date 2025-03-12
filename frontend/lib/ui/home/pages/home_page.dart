@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/config/dependencies_injector.dart';
+import 'package:frontend/domain/models/filter_model.dart';
 import 'package:frontend/routing/routes.dart';
 import 'package:frontend/ui/auth/logout/widgets/logout_widget.dart';
 import 'package:frontend/ui/home/view_model/home_view_model.dart';
+import 'package:frontend/ui/home/widgets/card_tap_widget.dart';
 import 'package:frontend/ui/home/widgets/home_body_page_widget.dart';
 import 'package:frontend/ui/home/widgets/order_tasks_sheet.dart';
 import 'package:frontend/ui/home/widgets/tasks_shimmer_list_widget.dart';
@@ -45,11 +47,19 @@ class _HomePageState extends State<HomePage> {
         actions: [
           const LogoutWidget(),
           IconButton(
-            onPressed: () {
-              showModalBottomSheet(
+            onPressed: () async {
+              final orderBy = await showModalBottomSheet<OrderBy?>(
                 context: context,
                 builder: (_) => const OrderTasksSheet(),
               );
+              if (orderBy != null) {
+                _homeViewModel.setFilter(
+                  FilterModel(
+                    orderBy: orderBy,
+                    order: _homeViewModel.filter?.order ?? Order.asc,
+                  ),
+                );
+              }
             },
             icon: const Icon(
               Icons.sort,
@@ -72,41 +82,73 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: SafeArea(
-        child: ListenableBuilder(
-          listenable: _homeViewModel.load,
-          builder: (_, child) {
-            if (_homeViewModel.load.isRunning) {
-              return const TasksShimmerListWidget();
-            }
-            if (_homeViewModel.load.isFailure) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.error_tasks_load,
-                      style: const TextStyle(
-                        fontSize: 16,
+        child: Column(
+          children: [
+            ListenableBuilder(
+              listenable: _homeViewModel,
+              builder: (_, child) {
+                if (_homeViewModel.filter == null ||
+                    _homeViewModel.filter!.isNotFilter) {
+                  return const SizedBox();
+                }
+                final filter = _homeViewModel.filter;
+                return CardTapWidget(
+                  onCloseCallback: () {
+                    _homeViewModel.setFilter(FilterModel.empty());
+                  },
+                  isOpen: filter!.order == Order.asc,
+                  iconClose: Icons.keyboard_arrow_up_rounded,
+                  onTap: () {
+                    _homeViewModel.setFilter(
+                      filter.copyWith(
+                        order:
+                            filter.order == Order.asc ? Order.desc : Order.asc,
                       ),
-                    ),
-                    TextButton(
-                      onPressed: _homeViewModel.load.execute,
-                      child: Text(
-                        AppLocalizations.of(context)!.try_again,
-                        style: const TextStyle(
-                          fontSize: 16,
-                        ),
+                    );
+                  },
+                  label: filter.orderBy!.label(context),
+                );
+              },
+            ),
+            Expanded(
+              child: ListenableBuilder(
+                listenable: _homeViewModel.load,
+                builder: (_, child) {
+                  if (_homeViewModel.load.isRunning) {
+                    return const TasksShimmerListWidget();
+                  }
+                  if (_homeViewModel.load.isFailure) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.error_tasks_load,
+                            style: const TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: _homeViewModel.load.execute,
+                            child: Text(
+                              AppLocalizations.of(context)!.try_again,
+                              style: const TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                    )
-                  ],
+                    );
+                  }
+                  return child!;
+                },
+                child: HomeBodyPageWidget(
+                  homeViewModel: _homeViewModel,
                 ),
-              );
-            }
-            return child!;
-          },
-          child: HomeBodyPageWidget(
-            homeViewModel: _homeViewModel,
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
