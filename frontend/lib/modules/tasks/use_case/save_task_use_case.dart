@@ -1,0 +1,19 @@
+import 'package:frontend/modules/tasks/repositories/tasks/tasks_repository.dart';
+import 'package:frontend/modules/tasks/dtos/task_dto.dart';
+import 'package:frontend/modules/tasks/models/task_model.dart';
+import 'package:result_dart/result_dart.dart';
+
+class SaveTaskUseCase {
+  final TasksRepository _repository;
+
+  SaveTaskUseCase({
+    required TasksRepository repository,
+  }) : _repository = repository;
+
+  AsyncResult<TaskModel> call(TaskDto task) async {
+    if (task.id != null) {
+      return _repository.updateTask(task);
+    }
+    return _repository.createTask(task);
+  }
+}

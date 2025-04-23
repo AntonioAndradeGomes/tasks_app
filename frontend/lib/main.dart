@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:frontend/core/config/dependencies_injector.dart';
 import 'package:frontend/core/theme/app_theme.dart';
-import 'package:frontend/data/repositories/auth/auth_repository.dart';
-import 'package:frontend/routing/app_routes.dart';
-import 'package:frontend/ui/my_app_viewmodel.dart';
+import 'package:frontend/main_module.dart';
+import 'package:frontend/modules/auth/repositories/auth_repository.dart';
+import 'package:frontend/routes/app_routes.dart';
+import 'package:frontend/modules/auth/viewmodels/my_app_viewmodel.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
+  //garante que você pode usar APIs assíncronas antes do runApp.
   WidgetsFlutterBinding.ensureInitialized();
   Logger.root.level = Level.ALL;
   await setupDependencies();
@@ -51,6 +52,7 @@ class _MyAppState extends State<MyApp> {
         Locale('en', 'US'), // Inglês
         Locale('pt', 'BR'),
       ],
+      //Envolve tudo dentro de MyAppWidget, que escuta o MyAppViewmodel.
       builder: (context, child) {
         return MyAppWidget(
           child: child!,

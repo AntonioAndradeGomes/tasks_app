@@ -23,6 +23,7 @@ export class AuthController {
     }
 
     async login(req: Request, res: Response) {
+   
         const { email, password } = req.body;
         const result = await this.loginUser.execute({ email, password });
         res.status(201).json(result);

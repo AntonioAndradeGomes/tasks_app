@@ -12,7 +12,7 @@ services:
         depends_on:
             - db
         volumes:
-            - ./:/app
+            - .:/app:cached
             - /app/node_modules
         command: >
             sh -c "wait-for-it db:5432 -- npx prisma migrate deploy && npm run dev"
