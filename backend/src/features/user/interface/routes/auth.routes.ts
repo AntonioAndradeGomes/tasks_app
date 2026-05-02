@@ -13,6 +13,7 @@ const authController = container.resolve<AuthController>('AuthController');
 authRouter.post('/signup', signupUserValidator, async (req, res) =>
     authController.signup(req, res),
 );
+
 authRouter.post('/login', loginUserValidator, async (req, res) =>
     authController.login(req, res),
 );
