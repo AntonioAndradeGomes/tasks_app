@@ -34,7 +34,6 @@ app.use(express.urlencoded({ extended: true }));
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-
 app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/tasks', taskRoutes);
@@ -45,5 +44,3 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}!`);
 });
-
-

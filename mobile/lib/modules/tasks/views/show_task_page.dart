@@ -4,7 +4,7 @@ import 'package:frontend/modules/tasks/viewmodels/show_task_viewmodel.dart';
 import 'package:frontend/modules/tasks/widgets/task_editable_body_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:result_dart/result_dart.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/core/l10n/app_localizations.dart';
 
 class ShowTaskPage extends StatefulWidget {
   final String? taskId;

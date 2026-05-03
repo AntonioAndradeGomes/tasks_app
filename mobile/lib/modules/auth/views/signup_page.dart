@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/l10n/app_localizations.dart';
 import 'package:frontend/main_module.dart';
 import 'package:frontend/modules/auth/dtos/user_registration.dart';
 import 'package:frontend/modules/auth/widgets/password_text_form_field_widget.dart';
 import 'package:frontend/modules/auth/viewmodels/signup_viewmodel.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});

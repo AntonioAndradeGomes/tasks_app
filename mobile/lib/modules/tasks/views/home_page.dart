@@ -10,7 +10,7 @@ import 'package:frontend/modules/tasks/widgets/home_body_page_widget.dart';
 import 'package:frontend/modules/tasks/widgets/order_tasks_sheet.dart';
 import 'package:frontend/modules/tasks/widgets/tasks_shimmer_list_widget.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/core/l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -24,9 +24,7 @@ import { DeleteTask } from '../features/tasks/usecase/DeleteTask';
 import { UpdateTask } from '../features/tasks/usecase/UpdateTask';
 
 // Registra PrismaClient
-container.register<PrismaClient>('PrismaClient', {
-    useFactory: () => new PrismaClient(),
-});
+container.registerInstance('PrismaClient', new PrismaClient());
 
 // Registra as dependências referentes ao user
 container.registerSingleton<UserRepository>(

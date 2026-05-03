@@ -5,7 +5,7 @@ import 'package:frontend/routes/routes.dart';
 import 'package:frontend/modules/auth/viewmodels/login_view_model.dart';
 import 'package:frontend/modules/auth/widgets/password_text_form_field_widget.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/core/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

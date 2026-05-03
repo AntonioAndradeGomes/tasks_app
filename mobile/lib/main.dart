@@ -6,7 +6,7 @@ import 'package:frontend/modules/auth/repositories/auth_repository.dart';
 import 'package:frontend/routes/app_routes.dart';
 import 'package:frontend/modules/auth/viewmodels/my_app_viewmodel.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/core/l10n/app_localizations.dart';
 
 void main() async {
   //garante que você pode usar APIs assíncronas antes do runApp.

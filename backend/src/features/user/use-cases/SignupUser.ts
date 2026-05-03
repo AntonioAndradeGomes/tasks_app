@@ -1,6 +1,6 @@
 import { AppError } from '../../../shared/errors/AppError';
 import { UserRepository } from '../domain/interfaces/UserRepository';
-import { HashService } from '../infrastructure/services/HashService';
+import { HashServiceInterface } from '../infrastructure/services/HashService';
 import { inject, injectable } from 'tsyringe';
 
 interface SignupUserRequest {
@@ -13,7 +13,7 @@ interface SignupUserRequest {
 export class SignupUser {
     constructor(
         @inject('UserRepository') private repository: UserRepository,
-        @inject('HashService') private hashService: HashService,
+        @inject('HashService') private hashService: HashServiceInterface,
     ) {}
 
     async execute(input: SignupUserRequest) {

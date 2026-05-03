@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/main_module.dart';
 import 'package:frontend/modules/auth/viewmodels/logout_viewmodel.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/core/l10n/app_localizations.dart';
 
 class LogoutWidget extends StatefulWidget {
   const LogoutWidget({super.key});
