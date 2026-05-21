@@ -1,22 +1,32 @@
 import type { Task } from "@/lib/models";
 import { Card, CardContent } from "../ui/card";
 
+import { Trash } from "lucide-react";
+
 interface TaskCardItemProps {
     task: Task;
     onToggleComplete?: (task: Task) => void;
+    onEdit?: (task: Task) => void;
+    onRemove?: (task: Task) => void;
 }
 
-const TaskCardItem = ({ task, onToggleComplete }: TaskCardItemProps) => {
+const TaskCardItem = ({
+    task,
+    onToggleComplete,
+    onEdit,
+    onRemove,
+}: TaskCardItemProps) => {
     const isCompleted = !!task.completed_at;
 
     return (
         <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => onEdit?.(task)}
+            className="cursor-pointer hover:shadow-md transition-shadow py-3"
             style={{
                 background: `${task.hexColor}`,
             }}
         >
-            <CardContent className="flex items-start gap-3">
+            <CardContent className="flex items-start gap-3 px-3">
                 <button
                     type="button"
                     onClick={(e) => {
@@ -51,12 +61,12 @@ const TaskCardItem = ({ task, onToggleComplete }: TaskCardItemProps) => {
 
                 <div className="flex-1 min-w-0">
                     <p
-                        className={`font-medium truncate ${isCompleted ? "line-through text-white" : "text-white"}`}
+                        className={`font-medium line-clamp-2 ${isCompleted ? "line-through text-white" : "text-white"}`}
                     >
                         {task.title}
                     </p>
                     {task.description && (
-                        <p className="text-sm mt-1 truncate text-white">
+                        <p className="text-sm line-clamp-2 text-white">
                             {task.description}
                         </p>
                     )}
@@ -67,6 +77,16 @@ const TaskCardItem = ({ task, onToggleComplete }: TaskCardItemProps) => {
                         </p>
                     )}
                 </div>
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove?.(task);
+                    }}
+                    className="mt-0.5 shrink-0 w-5 h-5 transition-colors border-white text-white"
+                >
+                    <Trash size={16} />
+                </button>
             </CardContent>
         </Card>
     );

@@ -1,165 +1,63 @@
 import Navbar from "@/components/navbar/navbar";
-import TaskCardItem from "@/components/task/task_card_item";
-import type { Task } from "@/lib/models";
+import AccordionTasks from "@/components/task/accordion_tasks";
+import TaskGrid from "@/components/task/task_grid";
+import TaskDialog from "@/components/task/task_dialog";
 
-const fakeTasks: Task[] = [
-    {
-        id: "1",
-        title: "Comprar mantimentos",
-        description: "Leite, ovos, pão e frutas",
-        hexColor: "#3b82f6",
-        user_id: "user-1",
-        due_at: "2026-05-05T18:00:00.000Z",
-        created_at: "2026-05-01T10:00:00.000Z",
-        updated_at: "2026-05-01T10:00:00.000Z",
-    },
-    {
-        id: "2",
-        title: "Revisar pull request",
-        description: "PR do módulo de autenticação",
-        hexColor: "#8b5cf6",
-        user_id: "user-1",
-        completed_at: "2026-05-02T09:00:00.000Z",
-        created_at: "2026-05-01T08:00:00.000Z",
-        updated_at: "2026-05-02T09:00:00.000Z",
-    },
-    {
-        id: "3",
-        title: "Reunião com o time",
-        hexColor: "#f59e0b",
-        user_id: "user-1",
-        due_at: "2026-05-03T14:00:00.000Z",
-        created_at: "2026-05-01T07:00:00.000Z",
-        updated_at: "2026-05-01T07:00:00.000Z",
-    },
-    {
-        id: "4",
-        title: "Estudar TypeScript",
-        description: "Generics e utility types",
-        hexColor: "#10b981",
-        user_id: "user-1",
-        created_at: "2026-04-30T20:00:00.000Z",
-        updated_at: "2026-04-30T20:00:00.000Z",
-    },
-    {
-        id: "5",
-        title: "Fazer deploy do backend",
-        description: "Subir nova versão para produção",
-        hexColor: "#ef4444",
-        user_id: "user-1",
-        due_at: "2026-05-04T12:00:00.000Z",
-        created_at: "2026-05-01T11:00:00.000Z",
-        updated_at: "2026-05-01T11:00:00.000Z",
-    },
-    {
-        id: "1",
-        title: "Comprar mantimentos",
-        description: "Leite, ovos, pão e frutas",
-        hexColor: "#3b82f6",
-        user_id: "user-1",
-        due_at: "2026-05-05T18:00:00.000Z",
-        created_at: "2026-05-01T10:00:00.000Z",
-        updated_at: "2026-05-01T10:00:00.000Z",
-    },
-    {
-        id: "2",
-        title: "Revisar pull request",
-        description: "PR do módulo de autenticação",
-        hexColor: "#8b5cf6",
-        user_id: "user-1",
-        completed_at: "2026-05-02T09:00:00.000Z",
-        created_at: "2026-05-01T08:00:00.000Z",
-        updated_at: "2026-05-02T09:00:00.000Z",
-    },
-    {
-        id: "3",
-        title: "Reunião com o time",
-        hexColor: "#f59e0b",
-        user_id: "user-1",
-        due_at: "2026-05-03T14:00:00.000Z",
-        created_at: "2026-05-01T07:00:00.000Z",
-        updated_at: "2026-05-01T07:00:00.000Z",
-    },
-    {
-        id: "4",
-        title: "Estudar TypeScript",
-        description: "Generics e utility types",
-        hexColor: "#10b981",
-        user_id: "user-1",
-        created_at: "2026-04-30T20:00:00.000Z",
-        updated_at: "2026-04-30T20:00:00.000Z",
-    },
-    {
-        id: "5",
-        title: "Fazer deploy do backend",
-        description: "Subir nova versão para produção",
-        hexColor: "#ef4444",
-        user_id: "user-1",
-        due_at: "2026-05-04T12:00:00.000Z",
-        created_at: "2026-05-01T11:00:00.000Z",
-        updated_at: "2026-05-01T11:00:00.000Z",
-    },
-    {
-        id: "1",
-        title: "Comprar mantimentos",
-        description: "Leite, ovos, pão e frutas",
-        hexColor: "#3b82f6",
-        user_id: "user-1",
-        due_at: "2026-05-05T18:00:00.000Z",
-        created_at: "2026-05-01T10:00:00.000Z",
-        updated_at: "2026-05-01T10:00:00.000Z",
-    },
-    {
-        id: "2",
-        title: "Revisar pull request",
-        description: "PR do módulo de autenticação",
-        hexColor: "#8b5cf6",
-        user_id: "user-1",
-        completed_at: "2026-05-02T09:00:00.000Z",
-        created_at: "2026-05-01T08:00:00.000Z",
-        updated_at: "2026-05-02T09:00:00.000Z",
-    },
-    {
-        id: "3",
-        title: "Reunião com o time",
-        hexColor: "#f59e0b",
-        user_id: "user-1",
-        due_at: "2026-05-03T14:00:00.000Z",
-        created_at: "2026-05-01T07:00:00.000Z",
-        updated_at: "2026-05-01T07:00:00.000Z",
-    },
-    {
-        id: "4",
-        title: "Estudar TypeScript",
-        description: "Generics e utility types",
-        hexColor: "#10b981",
-        user_id: "user-1",
-        created_at: "2026-04-30T20:00:00.000Z",
-        updated_at: "2026-04-30T20:00:00.000Z",
-    },
-    {
-        id: "5",
-        title: "Fazer deploy do backend",
-        description: "Subir nova versão para produção",
-        hexColor: "#ef4444",
-        user_id: "user-1",
-        due_at: "2026-05-04T12:00:00.000Z",
-        created_at: "2026-05-01T11:00:00.000Z",
-        updated_at: "2026-05-01T11:00:00.000Z",
-    },
-];
+import { Button } from "@/components/ui/button";
+import { fakeTasks, type Task } from "@/lib/models";
+import type { TaskFormData } from "@/schemas/task.schema";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 
 const HomePage = () => {
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<Task | undefined>();
+
+    const pendingTasks = fakeTasks.filter((t) => !t.completed_at);
+    const completedTasks = fakeTasks.filter((t) => !!t.completed_at);
+
+    const handleCreate = () => {
+        setSelectedTask(undefined);
+        setDialogOpen(true);
+    };
+
+    const handleEdit = (task: Task) => {
+        setSelectedTask(task);
+        setDialogOpen(true);
+    };
+
+    const handleSubmit = (data: TaskFormData) => {
+        if (selectedTask) {
+            console.log("Editando:", { ...selectedTask, ...data });
+        } else {
+            console.log("Criando:", data);
+        }
+    };
+
     return (
         <>
             <Navbar />
-            <div className="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                    {fakeTasks.map((task) => (
-                        <TaskCardItem key={task.id} task={task} />
-                    ))}
-                </div>
+            <div className="max-w-7xl mx-auto mt-10 mb-16 px-4 sm:px-6 lg:px-10 flex flex-col gap-6">
+                <TaskGrid tasks={pendingTasks} onEdit={handleEdit} />
+                {completedTasks.length > 0 && (
+                    <AccordionTasks tasks={completedTasks} title="Concluídas" />
+                )}
             </div>
+
+            <Button
+                onClick={handleCreate}
+                size="icon"
+                className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg bg-blue-500"
+                aria-label="Nova tarefa"
+            >
+                <Plus size={24} />
+            </Button>
+            <TaskDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                task={selectedTask}
+                onSubmit={handleSubmit}
+            />
         </>
     );
 };
