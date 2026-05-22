@@ -8,6 +8,8 @@ import PasswordInput from "@/components/input/password_input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type LoginFormData, loginSchema } from "@/schemas/login.schema";
+import authService from "@/services/auth.service";
+import { toast } from "sonner";
 
 export default function LoginPage() {
     const navigator = useNavigate();
@@ -20,9 +22,13 @@ export default function LoginPage() {
     });
 
     const onSubmit = async (data: LoginFormData) => {
-        console.log(data);
-        // await authService.login(data)
-        navigator("/", { replace: true });
+        try {
+            await authService.login(data);
+            toast.success("Login realizado");
+            navigator("/", { replace: true });
+        } catch {
+            toast.error("Falha ao tentar realizar login");
+        }
     };
 
     return (
@@ -32,7 +38,7 @@ export default function LoginPage() {
                 <Card className="w-96">
                     <CardContent>
                         <h4 className="text-2xl mb-7 text-center font-bold">
-                            Login.
+                            Entrar.
                         </h4>
                         <form
                             onSubmit={handleSubmit(onSubmit)}
@@ -63,15 +69,15 @@ export default function LoginPage() {
                                 className="w-full bg-black"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? "Entrando..." : "Login"}
+                                {isSubmitting ? "Entrando..." : "Entrar"}
                             </Button>
                             <p className="text-sm text-center text-muted-foreground">
-                                Don't have an account?{" "}
+                                Não tem uma conta?{" "}
                                 <Link
                                     to="/signup"
                                     className="underline-offset-4 text-black font-bold"
                                 >
-                                    Sign up.
+                                    Cadastre-se.
                                 </Link>
                             </p>
                         </form>
