@@ -40,7 +40,11 @@ const HomePage = () => {
             <div className="max-w-7xl mx-auto mt-10 mb-16 px-4 sm:px-6 lg:px-10 flex flex-col gap-6">
                 <TaskGrid tasks={pendingTasks} onEdit={handleEdit} />
                 {completedTasks.length > 0 && (
-                    <AccordionTasks tasks={completedTasks} title="Concluídas" />
+                    <AccordionTasks
+                        tasks={completedTasks}
+                        onEdit={handleEdit}
+                        title="Concluídas"
+                    />
                 )}
             </div>
 

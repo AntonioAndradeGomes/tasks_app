@@ -6,6 +6,7 @@ import {
     AccordionTrigger,
 } from "../ui/accordion";
 import TaskGrid from "./task_grid";
+import { useState } from "react";
 
 interface AccordionTasksProps {
     title: string;
@@ -15,15 +16,21 @@ interface AccordionTasksProps {
     onToggleComplete?: (task: Task) => void;
 }
 
-const AccordionTasks = ({ title, tasks }: AccordionTasksProps) => {
+const AccordionTasks = ({ title, tasks, onEdit }: AccordionTasksProps) => {
+    const [accordionOpen, setAccordionOpen] = useState("open");
     return (
-        <Accordion type="single" collapsible defaultValue="completed">
-            <AccordionItem value="completed">
+        <Accordion
+            type="single"
+            collapsible
+            value={accordionOpen}
+            onValueChange={setAccordionOpen}
+        >
+            <AccordionItem value="open">
                 <AccordionTrigger>
                     {title} ({tasks.length})
                 </AccordionTrigger>
-                <AccordionContent>
-                    <TaskGrid tasks={tasks} />
+                <AccordionContent className="mt-2">
+                    <TaskGrid tasks={tasks} onEdit={onEdit} />
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
